@@ -1,0 +1,89 @@
+<div class="container-consulta">
+
+    <!-- CABEÇALHO -->
+    <header class="cabecalho-consulta">
+      <span class="etiqueta">ÁREA DO CLIENTE</span>
+      <h1>Consultar Meus Pedidos</h1>
+      <p>Informe o seu CPF abaixo para visualizar os seus pedidos e atendimentos realizados.</p>
+    </header>
+  
+    <!-- FORMULÁRIO DE BUSCA -->
+    <div class="cartao-busca">
+      <form (ngSubmit)="buscarPorCpf()" class="form-busca">
+        <div class="grupo-input">
+          <label for="cpf">CPF do Cliente</label>
+          <input
+            type="text"
+            id="cpf"
+            [(ngModel)]="cpfBusca"
+            name="cpfBusca"
+            (input)="formatarCpfInput()"
+            placeholder="000.000.000-00"
+            maxlength="14"
+            required
+          />
+        </div>
+  
+        <button type="submit" class="btn-buscar" [disabled]="buscando">
+          <span *ngIf="!buscando">🔍 Consultar Pedidos</span>
+          <span *ngIf="buscando">Consultando...</span>
+        </button>
+      </form>
+  
+      <div class="mensagem-erro" *ngIf="mensagemErro">
+        ⚠️ {{ mensagemErro }}
+      </div>
+    </div>
+  
+    <!-- RESULTADOS -->
+    <section class="seccao-resultados" *ngIf="buscaRealizada">
+  
+      <div class="resumo-cliente" *ngIf="clienteNome">
+        <h2>Pedidos de: <strong>{{ clienteNome }}</strong></h2>
+        <span class="contador">{{ pedidosCliente.length }} pedido(s) encontrado(s)</span>
+      </div>
+  
+      <!-- LISTA DE PEDIDOS -->
+      <div class="grid-pedidos" *ngIf="pedidosCliente.length > 0">
+        <article class="cartao-pedido" *ngFor="let pedido of pedidosCliente">
+          <div class="cabecalho-card">
+            <div>
+              <span class="numero-pedido">Pedido #{{ pedido.idAtendimento ?? pedido.idpedido ?? pedido.id }}</span>
+              <span class="data-pedido">Data: {{ formatarData(pedido.dataAtendimento) }}</span>
+            </div>
+  
+            <span class="badge-status" [ngClass]="classeStatus(pedido.status ?? pedido.statusAtendimento)">
+              {{ nomeStatus(pedido.status ?? pedido.statusAtendimento) }}
+            </span>
+          </div>
+  
+          <div class="corpo-card">
+            <div class="itens-lista" *ngIf="obterItens(pedido).length > 0">
+              <h4>Itens do Pedido:</h4>
+              <ul>
+                <li *ngFor="let item of obterItens(pedido)">
+                  <span class="item-nome">{{ item.nomeItem ?? item.iditemNavigation?.item1 ?? item.item1 ?? 'Produto/Serviço' }}</span>
+                  <span class="item-qtd">{{ item.quantidade ?? 1 }}x</span>
+                  <span class="item-valor">{{ formatarPreco(item.valorUnitario ?? item.preco) }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+  
+          <div class="rodape-card">
+            <span>Valor Total:</span>
+            <strong class="valor-total">{{ formatarPreco(pedido.valorTotal) }}</strong>
+          </div>
+        </article>
+      </div>
+  
+      <!-- NENHUM PEDIDO LOCALIZADO -->
+      <div class="estado-vazio" *ngIf="pedidosCliente.length === 0">
+        <div class="icone-vazio">📦</div>
+        <h3>Nenhum pedido localizado</h3>
+        <p>Não encontramos nenhum registro de pedido associado ao CPF informado.</p>
+      </div>
+  
+    </section>
+  
+  </div>

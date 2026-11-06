@@ -1,0 +1,300 @@
+<div class="pagina-produtos">
+
+  <header class="cabecalho-pagina">
+    <div>
+      <span class="sobretitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+      <h1>Serviços</h1>
+      <p>Consulte e gerencie os serviços oferecidos.</p>
+    </div>
+
+    <button
+      type="button"
+      class="botao-principal"
+      (click)="novoServico()">
+      ＋ Novo serviço
+    </button>
+  </header>
+
+  <div class="mensagem sucesso" *ngIf="mensagemSucesso">
+    {{ mensagemSucesso }}
+  </div>
+
+  <div class="mensagem erro" *ngIf="mensagemErro">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Painel de visualização / consulta por ID -->
+  <section class="cartao" *ngIf="modalConsultaAberto && servicoSelecionado">
+    <h2>Detalhes do Serviço #{{ servicoSelecionado.iditem }}</h2>
+
+    <div class="campos-formulario">
+      <div class="campo">
+        <label>Nome do serviço</label>
+        <p>{{ servicoSelecionado.item1 || 'Não informado' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>ID da Categoria</label>
+        <p>{{ servicoSelecionado.idcategoria || 'Não informada' }}</p>
+      </div>
+
+      <div class="campo campo-largo">
+        <label>Descrição</label>
+        <p>{{ servicoSelecionado.descricaoItem || 'Sem descrição' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Preço (R$)</label>
+        <p>{{ formatarPreco(servicoSelecionado.preco) }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Situação</label>
+        <p>{{ servicoSelecionado.ativoProdutoServico === 'N' ? 'Inativo' : 'Ativo' }}</p>
+      </div>
+    </div>
+
+    <div class="acoes-formulario">
+      <button type="button" class="botao-secundario" (click)="fecharConsulta()">
+        Fechar
+      </button>
+      <button
+        type="button"
+        class="botao-principal"
+        (click)="editarServico(servicoSelecionado)">
+        Editar este serviço
+      </button>
+    </div>
+  </section>
+
+  <!-- Formulário para cadastro ou edição -->
+  <section class="cartao" *ngIf="mostrarFormulario">
+
+    <h2>
+      {{ idEdicao !== null ? 'Editar serviço' : 'Novo serviço' }}
+    </h2>
+
+    <form #formServico="ngForm" (ngSubmit)="salvarServico()">
+
+      <div class="campos-formulario">
+
+        <div class="campo">
+          <label for="nomeServico">Nome do serviço *</label>
+          <input
+            id="nomeServico"
+            name="nomeServico"
+            [(ngModel)]="formulario.item1"
+            required>
+        </div>
+
+        <div class="campo">
+          <label for="categoriaServico">ID da categoria *</label>
+          <input
+            id="categoriaServico"
+            name="categoriaServico"
+            type="number"
+            min="1"
+            [(ngModel)]="formulario.idcategoria"
+            required>
+        </div>
+
+        <div class="campo campo-largo">
+          <label for="descricaoServico">Descrição</label>
+          <textarea
+            id="descricaoServico"
+            name="descricaoServico"
+            [(ngModel)]="formulario.descricaoItem"
+            rows="3">
+          </textarea>
+        </div>
+
+        <div class="campo">
+          <label for="precoServico">Preço (R$) *</label>
+          <input
+            id="precoServico"
+            name="precoServico"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="formulario.preco"
+            required>
+        </div>
+
+        <div class="campo">
+          <label for="situacaoServico">Situação *</label>
+          <select
+            id="situacaoServico"
+            name="situacaoServico"
+            [(ngModel)]="formulario.ativoProdutoServico"
+            required>
+            <option value="S">Ativo</option>
+            <option value="N">Inativo</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="acoes-formulario">
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="cancelarFormulario()">
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="botao-principal"
+          [disabled]="salvando || formServico.invalid">
+          {{
+            salvando
+              ? 'Salvando...'
+              : (idEdicao !== null ? 'Salvar alterações' : 'Cadastrar serviço')
+          }}
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- Listagem dos serviços -->
+  <section class="cartao">
+
+    <div class="barra-tabela">
+      <div>
+        <h2>Lista de serviços</h2>
+        <p>{{ servicosFiltrados.length }} serviço(s) encontrado(s)</p>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <!-- Busca por ID -->
+        <div style="display: flex; gap: 6px;">
+          <input
+            class="campo-pesquisa"
+            style="width: 130px;"
+            type="number"
+            name="pesquisaId"
+            [(ngModel)]="pesquisaId"
+            placeholder="ID do servico"
+            (keyup.enter)="buscarPorId()">
+
+          <button
+            type="button"
+            class="botao-principal"
+            (click)="buscarPorId()"
+            [disabled]="buscandoId">
+            {{ buscandoId ? 'Buscando...' : 'Buscar ID' }}
+          </button>
+        </div>
+
+        <!-- Filtro por Texto -->
+        <input
+          class="campo-pesquisa"
+          type="search"
+          name="pesquisaServico"
+          [(ngModel)]="pesquisa"
+          placeholder="Pesquisar serviço por nome...">
+      </div>
+    </div>
+
+    <div class="estado-carregamento" *ngIf="carregando">
+      Carregando serviços...
+    </div>
+
+    <div class="tabela-responsiva" *ngIf="!carregando">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Serviço</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Situação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let servico of servicosFiltrados">
+
+            <td>#{{ servico.iditem }}</td>
+
+            <td>
+              <strong>{{ servico.item1 || 'Nome não informado' }}</strong>
+            </td>
+
+            <td>{{ servico.idcategoria }}</td>
+
+            <td class="preco">
+              {{ formatarPreco(servico.preco) }}
+            </td>
+
+            <td>
+              <span
+                class="etiqueta"
+                [class.inativo]="servico.ativoProdutoServico === 'N'">
+                {{ servico.ativoProdutoServico === 'N' ? 'Inativo' : 'Ativo' }}
+              </span>
+            </td>
+
+            <td class="acoes">
+              <!-- Visualizar por ID -->
+              <button
+                type="button"
+                class="botao-icone visualizar"
+                title="Visualizar serviço"
+                (click)="consultarServico(servico)">
+                👁
+              </button>
+
+              <!-- Editar -->
+              <button
+                type="button"
+                class="botao-icone editar"
+                title="Editar serviço"
+                (click)="editarServico(servico)">
+                ✎
+              </button>
+
+              <!-- Desativar / Reativar -->
+              <button
+                type="button"
+                class="botao-icone desativar"
+                [title]="servico.ativoProdutoServico === 'N' ? 'Ativar serviço' : 'Desativar serviço'"
+                (click)="desativarServico(servico)">
+                {{ servico.ativoProdutoServico === 'N' ? '✓' : '🚫' }}
+              </button>
+
+              <!-- Excluir -->
+              <button
+                type="button"
+                class="botao-icone excluir"
+                title="Excluir serviço"
+                (click)="excluirServico(servico)">
+                ×
+              </button>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="servicosFiltrados.length === 0">
+            <td colspan="6" class="sem-registros">
+              Nenhum serviço encontrado.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rodape-tabela">
+      <button
+        type="button"
+        class="botao-secundario"
+        (click)="atualizar()"
+        [disabled]="carregando">
+        ↻ Atualizar lista
+      </button>
+    </div>
+
+  </section>
+</div>

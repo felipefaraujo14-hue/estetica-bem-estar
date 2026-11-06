@@ -1,0 +1,282 @@
+<section class="clientes-page">
+
+  <div class="cabecalho-pagina">
+    <div>
+      <span class="subtitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+      <h1>Clientes</h1>
+      <p>Cadastre, consulte e edite os clientes.</p>
+    </div>
+
+    <button class="botao-principal" (click)="abrirCadastro()">
+      + Novo cliente
+    </button>
+  </div>
+
+  <div class="alerta sucesso" *ngIf="mensagemSucesso">
+    {{ mensagemSucesso }}
+  </div>
+
+  <div class="alerta erro" *ngIf="mensagemErro">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Painel de consulta direta por ID -->
+  <section class="painel-clientes" *ngIf="modalConsultaAberto && clienteSelecionado">
+    <h2>Detalhes do Cliente #{{ clienteSelecionado.idPessoa }}</h2>
+
+    <div class="form-grid">
+      <div class="campo">
+        <label>Nome completo</label>
+        <p>{{ clienteSelecionado.nome }}</p>
+      </div>
+
+      <div class="campo">
+        <label>CPF</label>
+        <p>{{ clienteSelecionado.cpf }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Data de nascimento</label>
+        <p>{{ clienteSelecionado.dataNascimento | date:'dd/MM/yyyy' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Sexo</label>
+        <p>{{ clienteSelecionado.sexo }}</p>
+      </div>
+
+      <div class="campo">
+        <label>E-mail</label>
+        <p>{{ clienteSelecionado.email || 'Não informado' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Telefone</label>
+        <p>{{ clienteSelecionado.telefone || 'Não informado' }}</p>
+      </div>
+
+      <div class="campo campo-completo" *ngIf="clienteSelecionado.enderecos?.length">
+        <label>Endereço</label>
+        <p>
+          CEP: {{ clienteSelecionado.enderecos[0].cep }} | 
+          N.º: {{ clienteSelecionado.enderecos[0].numero }} | 
+          Complemento: {{ clienteSelecionado.enderecos[0].complemento || 'N/A' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="acoes-formulario">
+      <button type="button" class="botao-secundario" (click)="fecharConsulta()">
+        Fechar
+      </button>
+      <button
+        type="button"
+        class="botao-principal"
+        (click)="editarCliente(clienteSelecionado.idPessoa)">
+        Editar este cliente
+      </button>
+    </div>
+  </section>
+
+  <!-- Formulário de cadastro e edição -->
+  <section class="painel-clientes" *ngIf="formularioAberto">
+
+    <h2>{{ modoEdicao ? 'Editar cliente' : 'Cadastrar cliente' }}</h2>
+
+    <form (ngSubmit)="salvarCliente()" #formCliente="ngForm">
+
+      <div class="form-grid">
+
+        <div class="campo">
+          <label for="nome">Nome completo *</label>
+          <input
+            id="nome"
+            name="nome"
+            [(ngModel)]="cliente.nome"
+            required
+            maxlength="150" />
+        </div>
+
+        <div class="campo">
+          <label for="cpf">CPF *</label>
+          <input
+            id="cpf"
+            name="cpf"
+            [(ngModel)]="cliente.cpf"
+            required
+            maxlength="14"
+            placeholder="Somente números ou com pontuação" />
+        </div>
+
+        <div class="campo">
+          <label for="dataNascimento">Data de nascimento *</label>
+          <input
+            id="dataNascimento"
+            name="dataNascimento"
+            type="date"
+            [(ngModel)]="cliente.dataNascimento"
+            required />
+        </div>
+
+        <div class="campo">
+          <label for="sexo">Sexo *</label>
+          <select
+            id="sexo"
+            name="sexo"
+            [(ngModel)]="cliente.sexo"
+            required>
+            <option value="">Selecione</option>
+            <option value="F">Feminino</option>
+            <option value="M">Masculino</option>
+            <option value="O">Outro</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [(ngModel)]="cliente.email" />
+        </div>
+
+        <div class="campo">
+          <label for="telefone">Telefone</label>
+          <input
+            id="telefone"
+            name="telefone"
+            [(ngModel)]="cliente.telefone"
+            maxlength="15" />
+        </div>
+
+        <div class="campo">
+          <label for="cep">CEP</label>
+          <input
+            id="cep"
+            name="cep"
+            [(ngModel)]="cliente.enderecos[0].cep"
+            maxlength="9" />
+        </div>
+
+        <div class="campo">
+          <label for="numero">Número</label>
+          <input
+            id="numero"
+            name="numero"
+            [(ngModel)]="cliente.enderecos[0].numero" />
+        </div>
+
+        <div class="campo campo-completo">
+          <label for="complemento">Complemento</label>
+          <input
+            id="complemento"
+            name="complemento"
+            [(ngModel)]="cliente.enderecos[0].complemento" />
+        </div>
+
+      </div>
+
+      <div class="acoes-formulario">
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="cancelarFormulario()">
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="botao-principal"
+          [disabled]="salvando || formCliente.invalid">
+          {{ salvando ? 'Salvando...' : (modoEdicao ? 'Salvar alterações' : 'Cadastrar cliente') }}
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <!-- Lista de clientes e busca -->
+  <section class="painel-clientes">
+
+    <div class="barra-ferramentas">
+      <!-- Busca direta no backend pelo ID -->
+      <div style="display: flex; gap: 8px;">
+        <input
+          type="number"
+          [(ngModel)]="pesquisaId"
+          placeholder="Buscar por ID..."
+          (keyup.enter)="buscarPorId()"
+          aria-label="Buscar cliente por ID" />
+
+        <button
+          class="botao-principal"
+          (click)="buscarPorId()"
+          [disabled]="carregando">
+          Buscar por ID
+        </button>
+      </div>
+
+      <!-- Filtro local na tabela -->
+      <input
+        type="text"
+        [(ngModel)]="pesquisa"
+        placeholder="Nome ou CPF..."
+        aria-label="Pesquisar clientes" />
+
+      <button
+        class="botao-secundario"
+        (click)="atualizar()"
+        [disabled]="carregando">
+        Atualizar lista
+      </button>
+    </div>
+
+    <p *ngIf="carregando">Carregando dados da API...</p>
+
+    <div
+      class="tabela-container"
+      *ngIf="!carregando && clientesFiltrados.length > 0">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let cliente of clientesFiltrados">
+            <td>#{{ cliente.idPessoa }}</td>
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.cpf }}</td>
+            <td>
+              <button
+                class="botao-secundario"
+                (click)="consultarCliente(cliente.idPessoa)">
+                Visualizar
+              </button>
+              <button
+                class="botao-editar"
+                (click)="editarCliente(cliente.idPessoa!)">
+                Editar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <p
+      class="vazio"
+      *ngIf="!carregando && clientesFiltrados.length === 0">
+      Nenhum cliente encontrado.
+    </p>
+
+  </section>
+
+</section>

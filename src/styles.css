@@ -1,0 +1,56 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Tipografia */
+  --fonte-principal: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+  /* Cores Globais */
+  --cor-fundo-pagina: #f8fafc;     /* Off-white limpo e moderno */
+  --cor-texto-principal: #0f172a;  /* Grafite escuro / Slate 900 */
+  --cor-texto-secundario: #64748b; /* Cinza médio / Slate 500 */
+
+  /* Cores de Destaque / CTA */
+  --cor-destaque: #2563eb;         /* Azul Royal vibrante */
+  --cor-destaque-hover: #1d4ed8;   /* Azul profundo para interações */
+
+  /* Neutros e Estrutura */
+  --cor-fundo-card: #ffffff;
+  --cor-fundo-suave: #f1f5f9;     /* Slate 100 para hovers e campos */
+  --cor-borda: #e2e8f0;           /* Borda sutil */
+  --cor-borda-hover: #cbd5e1;
+
+  /* Alertas / Remoção */
+  --cor-remover: #ef4444;
+  --cor-remover-hover: #dc2626;
+
+  /* Sombras */
+  --sombra-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  background-color: var(--cor-fundo-pagina);
+  color: var(--cor-texto-principal);
+  font-family: var(--fonte-principal);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}

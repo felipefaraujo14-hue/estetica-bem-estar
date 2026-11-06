@@ -1,0 +1,79 @@
+<div class="layout">
+
+  <!-- MENU LATERAL -->
+  <aside class="menu-lateral">
+
+    <div class="marca">
+      <div class="marca-icone">E&amp;B</div>
+
+      <div>
+        <h2>Estética</h2>
+        <span>&amp; Bem-Estar</span>
+      </div>
+    </div>
+
+    <div class="menu-titulo">LOJA VIRTUAL</div>
+
+    <nav class="navegacao">
+      <a routerLink="/"
+         routerLinkActive="ativo"
+         [routerLinkActiveOptions]="{ exact: true }">
+        <span class="icone">⌂</span>
+        Início
+      </a>
+
+      <a routerLink="/catalogo" routerLinkActive="ativo">
+        <span class="icone">▦</span>
+        Catálogo
+      </a>
+
+      <a routerLink="/carrinho" routerLinkActive="ativo">
+        <span class="icone">🛍</span>
+        Carrinho
+      </a>
+
+      <a routerLink="/meus-pedidos" routerLinkActive="ativo">
+        <span class="icone">🔍</span>
+        Meus pedidos
+      </a>
+
+      <!-- Botão de Administração -->
+      <a routerLink="/admin" routerLinkActive="ativo">
+        <span class="icone">⚙</span>
+        Administração
+      </a>
+    </nav>
+
+    <div class="rodape-menu">
+      Sistema de Gestão
+      <span>Versão final</span>
+    </div>
+
+  </aside>
+
+  <!-- ÁREA PRINCIPAL -->
+  <main class="conteudo">
+
+    <header class="cabecalho">
+      <div>
+        <span class="subtitulo">SISTEMA DE GESTÃO</span>
+        <h2>Estética &amp; Bem-Estar</h2>
+      </div>
+
+      <div class="status-api">
+        <span class="ponto"></span>
+        Bem-Estar
+      </div>
+    </header>
+
+    <section class="area-pagina">
+      <router-outlet></router-outlet>
+    </section>
+
+    <footer class="rodape">
+      Estética &amp; Bem-Estar · Sistema de Gestão
+    </footer>
+
+  </main>
+
+</div>

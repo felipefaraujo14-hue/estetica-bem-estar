@@ -1,0 +1,30 @@
+<div class="container-admin">
+
+    <header class="cabecalho-admin">
+      <div>
+        <span class="sobretitulo">PAINEL DE CONTROLO</span>
+        <h1>Administração</h1>
+        <p>Gerencie todas as funções administrativas do sistema abaixo.</p>
+      </div>
+    </header>
+  
+    <!-- ABAS DA ADMINISTRAÇÃO -->
+    <nav class="abas-admin">
+      <a routerLink="/admin/inicio" routerLinkActive="aba-ativa">🏠 Início</a>
+      <a routerLink="/admin/clientes" routerLinkActive="aba-ativa">👥 Clientes</a>
+      <a routerLink="/admin/funcionarios" routerLinkActive="aba-ativa">👔 Funcionários</a>
+      <a routerLink="/admin/categorias" routerLinkActive="aba-ativa">🏷 Categorias</a>
+      <a routerLink="/admin/produtos" routerLinkActive="aba-ativa">📦 Produtos</a>
+      <a routerLink="/admin/servicos" routerLinkActive="aba-ativa">✧ Serviços</a>
+      <a routerLink="/admin/estoque" routerLinkActive="aba-ativa">📊 Estoque</a>
+      <a routerLink="/admin/entradas" routerLinkActive="aba-ativa">＋ Entradas</a>
+      <a routerLink="/admin/atendimentos" routerLinkActive="aba-ativa">📝 Atendimentos</a>
+      <a routerLink="/admin/pedidos" routerLinkActive="aba-ativa">📋 Pedidos</a>
+    </nav>
+  
+    <!-- Renderização da sub-rota ativa -->
+    <section class="conteudo-modulo">
+      <router-outlet></router-outlet>
+    </section>
+  
+  </div>

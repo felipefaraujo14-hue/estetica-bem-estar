@@ -1,0 +1,157 @@
+<div class="pagina-produtos">
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho-pagina">
+    <div>
+      <span class="sobretitulo">SISTEMA DE GESTÃO</span>
+      <h1>Painel Administrativo</h1>
+      <p>Visão geral e indicadores em tempo real da estética e bem-estar.</p>
+    </div>
+
+    <button
+      type="button"
+      class="botao-principal"
+      (click)="carregarDadosDashboard()"
+      [disabled]="carregando">
+      ↻ Atualizar painel
+    </button>
+  </header>
+
+  <!-- Mensagem de erro -->
+  <div class="mensagem erro" *ngIf="mensagemErro">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Indicador de Carregamento -->
+  <div class="estado-carregamento" *ngIf="carregando">
+    Carregando indicadores do sistema...
+  </div>
+
+  <ng-container *ngIf="!carregando">
+
+    <!-- KPI CARDS (Indicadores Principais) -->
+    <section class="resumo-estoque">
+
+      <article class="indicador-estoque">
+        <span class="indicador-titulo">Clientes</span>
+        <strong>{{ totalClientes }}</strong>
+        <small>Clientes cadastrados</small>
+      </article>
+
+      <article class="indicador-estoque">
+        <span class="indicador-titulo">Produtos / Serviços</span>
+        <strong>{{ totalProdutos }} / {{ totalServicos }}</strong>
+        <small>Cadastros ativos</small>
+      </article>
+
+      <article class="indicador-estoque">
+        <span class="indicador-titulo">Pedidos &amp; Vendas</span>
+        <strong>{{ totalPedidos }}</strong>
+        <small>Total: {{ formatarPreco(faturamentoTotal) }}</small>
+      </article>
+
+      <article class="indicador-estoque" [class.alerta]="produtosEstoqueBaixoCount > 0" [class.sem-estoque]="produtosSemEstoqueCount > 0">
+        <span class="indicador-titulo">Alertas de Estoque</span>
+        <strong>{{ produtosEstoqueBaixoCount + produtosSemEstoqueCount }}</strong>
+        <small>{{ produtosSemEstoqueCount }} zerado(s) · {{ produtosEstoqueBaixoCount }} baixo(s)</small>
+      </article>
+
+    </section>
+
+    <!-- GRID COM RESUMOS RÁPIDOS -->
+    <div class="grid-resumos">
+
+      <!-- ÚLTIMOS PEDIDOS / ATENDIMENTOS -->
+      <section class="cartao">
+        <div class="barra-tabela">
+          <div>
+            <h2>Últimos Pedidos / Atendimentos</h2>
+            <p>Os 5 registros mais recentes do sistema</p>
+          </div>
+          <a routerLink="/pedidos" class="botao-secundario">Ver todos</a>
+        </div>
+
+        <div class="tabela-responsiva">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pedido of ultimosPedidos">
+                <td>#{{ pedido.idAtendimento }}</td>
+                <td><strong>{{ pedido.nomeCliente || 'Não informado' }}</strong></td>
+                <td>{{ pedido.dataAtendimento | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="etiqueta" [ngClass]="classeStatus(pedido.status)">
+                    {{ nomeStatus(pedido.status) }}
+                  </span>
+                </td>
+                <td class="preco">{{ formatarPreco(pedido.valorTotal) }}</td>
+              </tr>
+
+              <tr *ngIf="ultimosPedidos.length === 0">
+                <td colspan="5" class="sem-registros">
+                  Nenhum pedido ou atendimento registrado.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ALERTAS DE ESTOQUE CRÍTICO -->
+      <section class="cartao">
+        <div class="barra-tabela">
+          <div>
+            <h2>Atenção ao Estoque</h2>
+            <p>Produtos zerados ou com até 5 unidades</p>
+          </div>
+          <a routerLink="/estoque" class="botao-secundario">Gerenciar estoque</a>
+        </div>
+
+        <div class="tabela-responsiva">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Produto</th>
+                <th>Qtd.</th>
+                <th>Situação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of itensEstoqueCritico">
+                <td>#{{ item.iditem }}</td>
+                <td><strong>{{ item.nomeProduto }}</strong></td>
+                <td><strong>{{ item.quantidadeEstoque }}</strong> {{ item.unidade || 'UN' }}</td>
+                <td>
+                  <span
+                    class="etiqueta"
+                    [class.inativo]="item.quantidadeEstoque === 0"
+                    [class.estoque-baixo]="item.quantidadeEstoque > 0 && item.quantidadeEstoque <= 5">
+                    {{ item.quantidadeEstoque === 0 ? 'Sem estoque' : 'Estoque baixo' }}
+                  </span>
+                </td>
+              </tr>
+
+              <tr *ngIf="itensEstoqueCritico.length === 0">
+                <td colspan="4" class="sem-registros">
+                  Nenhum produto em nível crítico de estoque!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+  </ng-container>
+
+</div>

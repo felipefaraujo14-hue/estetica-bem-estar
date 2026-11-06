@@ -1,0 +1,280 @@
+
+<div class="pagina-funcionarios">
+
+    <header class="cabecalho-pagina">
+      <div>
+        <span class="sobretitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+        <h1>Funcionários</h1>
+        <p>Gerencie os funcionários da empresa.</p>
+      </div>
+  
+      <button
+        type="button"
+        class="botao-principal"
+        (click)="novoFuncionario()">
+        <span>＋</span> Novo funcionário
+      </button>
+    </header>
+  
+    <!-- Mensagens de retorno da API -->
+    <div class="mensagem sucesso" *ngIf="mensagemSucesso">
+      {{ mensagemSucesso }}
+    </div>
+  
+    <div class="mensagem erro" *ngIf="mensagemErro">
+      {{ mensagemErro }}
+    </div>
+  
+    <!-- Formulário de cadastro e edição -->
+    <section class="cartao formulario-cartao" *ngIf="mostrarFormulario">
+  
+      <div class="titulo-cartao">
+        <div>
+          <h2>
+            {{ idEdicao !== null ? 'Editar funcionário' : 'Novo funcionário' }}
+          </h2>
+          <p>Preencha os dados do funcionário.</p>
+        </div>
+      </div>
+  
+      <form #formFuncionario="ngForm" (ngSubmit)="salvarFuncionario()">
+  
+        <div class="campos-formulario">
+  
+          <div class="campo campo-largo">
+            <label for="nome">Nome completo *</label>
+            <input
+              id="nome"
+              name="nome"
+              type="text"
+              [(ngModel)]="formulario.nome"
+              placeholder="Digite o nome completo"
+              required>
+          </div>
+  
+          <div class="campo">
+            <label for="cpf">CPF *</label>
+            <input
+              id="cpf"
+              name="cpf"
+              type="text"
+              [(ngModel)]="formulario.cpf"
+              placeholder="Somente números ou CPF formatado"
+              maxlength="14"
+              required>
+          </div>
+  
+          <div class="campo">
+            <label for="cargo">Cargo *</label>
+            <input
+              id="cargo"
+              name="cargo"
+              type="text"
+              [(ngModel)]="formulario.cargo"
+              placeholder="Ex.: Esteticista"
+              required>
+          </div>
+  
+          <div class="campo">
+            <label for="email">E-mail</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              [(ngModel)]="formulario.email"
+              placeholder="funcionario@email.com">
+          </div>
+  
+          <div class="campo">
+            <label for="telefone">Telefone</label>
+            <input
+              id="telefone"
+              name="telefone"
+              type="tel"
+              [(ngModel)]="formulario.telefone"
+              placeholder="Ex.: 79999999999">
+          </div>
+  
+          <div class="campo">
+            <label for="dataNascimento">Data de nascimento *</label>
+            <input
+              id="dataNascimento"
+              name="dataNascimento"
+              type="date"
+              [(ngModel)]="formulario.dataNascimento"
+              required>
+          </div>
+  
+          <div class="campo">
+            <label for="sexo">Sexo *</label>
+            <select
+              id="sexo"
+              name="sexo"
+              [(ngModel)]="formulario.sexo"
+              required>
+              <option value="">Selecione</option>
+              <option value="F">Feminino</option>
+              <option value="M">Masculino</option>
+              <option value="O">Outro</option>
+            </select>
+          </div>
+  
+          <div class="campo">
+            <label for="dataAdmissao">Data de admissão *</label>
+            <input
+              id="dataAdmissao"
+              name="dataAdmissao"
+              type="date"
+              [(ngModel)]="formulario.data_admissao"
+              required>
+          </div>
+  
+          <div class="campo">
+            <label for="ativoPessoa">Situação *</label>
+            <select
+              id="ativoPessoa"
+              name="ativoPessoa"
+              [(ngModel)]="formulario.ativoPessoa"
+              required>
+              <option value="S">Ativo</option>
+              <option value="N">Inativo</option>
+            </select>
+          </div>
+  
+        </div>
+  
+        <p class="nota-formulario">
+          * Campos obrigatórios. O backend pode exigir outros campos.
+        </p>
+  
+        <div class="acoes-formulario">
+          <button
+            type="button"
+            class="botao-secundario"
+            (click)="cancelarFormulario()">
+            Cancelar
+          </button>
+  
+          <button
+            type="submit"
+            class="botao-principal"
+            [disabled]="salvando || formFuncionario.invalid">
+            {{ salvando ? 'Salvando...' :
+               (idEdicao !== null ? 'Salvar alterações' : 'Cadastrar funcionário') }}
+          </button>
+        </div>
+  
+      </form>
+    </section>
+  
+    <!-- Tabela de funcionários -->
+    <section class="cartao tabela-cartao">
+  
+      <div class="barra-tabela">
+        <div>
+          <h2>Lista de funcionários</h2>
+          <p>
+            {{ funcionariosFiltrados.length }}
+            funcionário(s) encontrado(s)
+          </p>
+        </div>
+  
+        <div class="pesquisa">
+          <span aria-hidden="true">⌕</span>
+          <input
+            type="search"
+            name="pesquisa"
+            [(ngModel)]="pesquisa"
+            placeholder="Pesquisar por nome ou CPF..."
+            aria-label="Pesquisar funcionários">
+        </div>
+      </div>
+  
+      <div class="estado-carregamento" *ngIf="carregando">
+        Carregando funcionários...
+      </div>
+  
+      <div class="tabela-responsiva" *ngIf="!carregando">
+        <table>
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>CPF</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Cargo</th>
+              <th class="coluna-acoes">Ações</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngFor="let funcionario of funcionariosFiltrados">
+              <td>
+                <div class="identificacao">
+                  <div class="avatar">
+                    {{ funcionario.nome?.charAt(0)?.toUpperCase() || '?' }}
+                  </div>
+                  <span>{{ funcionario.nome }}</span>
+                </div>
+              </td>
+  
+              <td>{{ funcionario.cpf }}</td>
+              <td>{{ funcionario.email || 'Não informado' }}</td>
+              <td>{{ funcionario.telefone || 'Não informado' }}</td>
+              <td>
+                <span class="etiqueta-cargo">
+                  {{ funcionario.cargo || 'Não informado' }}
+                </span>
+              </td>
+  
+              <td class="acoes-linha">
+                <button
+                  type="button"
+                  class="botao-icone editar"
+                  title="Editar funcionário"
+                  aria-label="Editar funcionário"
+                  (click)="editarFuncionario(funcionario)">
+                  ✎
+                </button>
+  
+                <button
+                  type="button"
+                  class="botao-icone excluir"
+                  title="Excluir funcionário"
+                  aria-label="Excluir funcionário"
+                  (click)="excluirFuncionario(funcionario)">
+                  ×
+                </button>
+              </td>
+            </tr>
+  
+            <tr *ngIf="funcionariosFiltrados.length === 0">
+              <td colspan="6" class="sem-registros">
+                <strong>Nenhum funcionário encontrado</strong>
+                <p>
+                  {{
+                    pesquisa
+                      ? 'Tente pesquisar por outro nome ou CPF.'
+                      : 'Cadastre um funcionário para começar.'
+                  }}
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="rodape-tabela">
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="carregarFuncionarios()"
+          [disabled]="carregando">
+          ↻ Atualizar lista
+        </button>
+      </div>
+  
+    </section>
+  
+  </div>
+  

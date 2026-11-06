@@ -1,0 +1,272 @@
+
+<div class="pagina-entradas">
+
+  <!-- Cabeçalho da página -->
+  <div class="cabecalho-pagina">
+    <span class="sobretitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+    <h1>Entrada de produtos</h1>
+    <p>Registre as mercadorias recebidas e acompanhe as entradas.</p>
+  </div>
+
+  <!-- Ações da página -->
+  <div class="acoes-pagina">
+    <button
+      type="button"
+      class="botao-secundario"
+      (click)="carregarDados()"
+      [disabled]="carregando || salvando">
+      ↻ Atualizar dados
+    </button>
+  </div>
+
+  <!-- Mensagem de erro -->
+  <div
+    class="mensagem erro"
+    *ngIf="mensagemErro">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Mensagem de sucesso -->
+  <div
+    class="mensagem sucesso"
+    *ngIf="mensagemSucesso">
+    {{ mensagemSucesso }}
+  </div>
+
+  <!-- Formulário de entrada -->
+  <section class="cartao formulario-cartao">
+
+    <div class="titulo-secao">
+      <div>
+        <h2>Registrar nova entrada</h2>
+        <p>Informe os dados dos produtos recebidos.</p>
+      </div>
+    </div>
+
+    <form
+      #formEntrada="ngForm"
+      (ngSubmit)="salvarEntrada()">
+
+      <div class="formulario-grid">
+
+        <!-- Seleção do produto -->
+        <div class="campo campo-produto">
+          <label for="produto">Produto *</label>
+
+          <select
+            id="produto"
+            name="produto"
+            [(ngModel)]="iditem"
+            (ngModelChange)="aoSelecionarProduto()"
+            required>
+
+            <option [ngValue]="null">
+              Selecione um produto
+            </option>
+
+            <option
+              *ngFor="let produto of produtos"
+              [ngValue]="produto.iditem">
+              {{ produto.nomeProduto }}
+            </option>
+
+          </select>
+        </div>
+
+        <!-- Data da entrada -->
+        <div class="campo">
+          <label for="dataEntrada">Data da entrada *</label>
+
+          <input
+            id="dataEntrada"
+            name="dataEntrada"
+            type="date"
+            [(ngModel)]="dataEntradaProduto"
+            required>
+        </div>
+
+        <!-- Quantidade recebida -->
+        <div class="campo">
+          <label for="quantidade">Quantidade recebida *</label>
+
+          <input
+            id="quantidade"
+            name="quantidade"
+            type="number"
+            min="1"
+            step="1"
+            [(ngModel)]="quantidadeEntrada"
+            placeholder="Ex.: 20"
+            required>
+        </div>
+
+        <!-- Unidade do produto -->
+        <div class="campo">
+          <label for="unidade">Unidade *</label>
+
+          <input
+            id="unidade"
+            name="unidade"
+            type="text"
+            [(ngModel)]="unidade"
+            placeholder="Ex.: UN"
+            required>
+        </div>
+
+        <!-- Valor unitário -->
+        <div class="campo">
+          <label for="valorUnitario">
+            Valor unitário de entrada (R$) *
+          </label>
+
+          <input
+            id="valorUnitario"
+            name="valorUnitario"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="valorUnitarioEntrada"
+            placeholder="0,00"
+            required>
+        </div>
+
+        <!-- Total calculado automaticamente -->
+        <div class="campo campo-total">
+          <span class="rotulo-total">
+            Valor total da entrada
+          </span>
+
+          <strong>
+            {{ formatarMoeda(valorTotal) }}
+          </strong>
+
+          <small>Quantidade × valor unitário</small>
+        </div>
+
+      </div>
+
+      <!-- Botões do formulário -->
+      <div class="acoes-formulario">
+
+        <button
+          type="submit"
+          class="botao-principal"
+          [disabled]="salvando || carregando">
+
+          {{ salvando ? 'Salvando...' : 'Registrar entrada' }}
+
+        </button>
+
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="limparFormulario()"
+          [disabled]="salvando">
+
+          Limpar formulário
+
+        </button>
+
+      </div>
+
+    </form>
+  </section>
+
+  <!-- Histórico de entradas -->
+  <section class="secao-historico">
+
+    <div class="titulo-secao">
+      <div>
+        <h2>Histórico de entradas</h2>
+        <p>Consulte as mercadorias registradas no sistema.</p>
+      </div>
+
+      <span class="contador">
+        {{ entradas.length }} registro(s)
+      </span>
+    </div>
+
+    <div class="cartao tabela-cartao">
+
+      <!-- Carregamento -->
+      <div
+        class="estado-carregamento"
+        *ngIf="carregando">
+
+        Carregando dados...
+
+      </div>
+
+      <!-- Tabela -->
+      <div
+        class="tabela-responsiva"
+        *ngIf="!carregando">
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Produto</th>
+              <th>Data da entrada</th>
+              <th>Quantidade</th>
+              <th>Unidade</th>
+              <th>Valor unitário</th>
+              <th>Valor total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <!-- Registros existentes -->
+            <tr *ngFor="let entrada of entradas">
+
+              <td>
+                #{{ entrada.identradaProduto }}
+              </td>
+
+              <td class="nome-produto">
+                {{ nomeProduto(entrada.iditem) }}
+              </td>
+
+              <td>
+                {{ entrada.dataEntradaProduto | date:'dd/MM/yyyy':'':'pt-BR' }}
+              </td>
+
+              <td>
+                {{ entrada.quantidadeEntrada }}
+              </td>
+
+              <td>
+                {{ entrada.unidade }}
+              </td>
+
+              <td>
+                {{ formatarMoeda(entrada.valorUnitarioEntrada) }}
+              </td>
+
+              <td class="valor-total">
+                {{
+                  formatarMoeda(
+                    entrada.quantidadeEntrada *
+                    entrada.valorUnitarioEntrada
+                  )
+                }}
+              </td>
+
+            </tr>
+
+            <!-- Quando não existem registros -->
+            <tr *ngIf="entradas.length === 0">
+              <td colspan="7" class="sem-registros">
+                Nenhuma entrada de produto cadastrada.
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </section>
+
+</div>

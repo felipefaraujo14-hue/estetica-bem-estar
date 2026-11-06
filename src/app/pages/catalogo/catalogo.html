@@ -1,0 +1,132 @@
+<section class="catalogo">
+
+    <div class="titulo-pagina">
+      <span class="subtitulo">ESTÉTICA & BEM-ESTAR</span>
+      <h1>Produtos e serviços</h1>
+      <p>
+        Encontre os produtos e tratamentos ideais para cuidar de você.
+      </p>
+    </div>
+  
+    <div class="filtros">
+  
+      <div class="campo pesquisa">
+        <label for="pesquisa">Pesquisar</label>
+        <input
+          id="pesquisa"
+          type="text"
+          [(ngModel)]="pesquisa"
+          placeholder="Digite o nome do produto ou serviço..."
+        />
+      </div>
+  
+      <div class="campo">
+        <label for="categoria">Categoria</label>
+        <select
+          id="categoria"
+          [(ngModel)]="categoriaSelecionada"
+        >
+          <option value="">Todas as categorias</option>
+  
+          <option
+            *ngFor="let categoria of categorias"
+            [value]="categoria.id"
+          >
+            {{ categoria.nome }}
+          </option>
+        </select>
+      </div>
+  
+      <div class="campo">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" [(ngModel)]="tipoSelecionado">
+          <option value="T">Todos</option>
+          <option value="P">Produtos</option>
+          <option value="S">Serviços</option>
+        </select>
+      </div>
+  
+    </div>
+  
+    <div class="status" *ngIf="carregando">
+      Carregando produtos e serviços...
+    </div>
+  
+    <div class="erro" *ngIf="mensagemErro">
+      {{ mensagemErro }}
+  
+      <button type="button" (click)="carregarItens()">
+        Tentar novamente
+      </button>
+    </div>
+  
+    <div class="resultado" *ngIf="!carregando && !mensagemErro">
+      <p>
+        {{ itensFiltrados.length }}
+        item(ns) encontrado(s)
+      </p>
+  
+      <span class="contador-carrinho">
+        Carrinho: {{ quantidadeCarrinho }} item(ns)
+      </span>
+    </div>
+  
+    <div
+      class="grade-produtos"
+      *ngIf="!carregando && !mensagemErro"
+    >
+  
+      <article
+        class="produto-card"
+        *ngFor="let item of itensFiltrados"
+      >
+  
+        <div class="icone-produto">
+          {{ item.tipoItem?.toUpperCase() === 'S' ? '✦' : '♡' }}
+        </div>
+  
+        <span
+          class="tipo"
+          [class.servico]="item.tipoItem?.toUpperCase() === 'S'"
+        >
+          {{
+            item.tipoItem?.toUpperCase() === 'S'
+              ? 'Serviço'
+              : 'Produto'
+          }}
+        </span>
+  
+        <h2>{{ nomeItem(item) }}</h2>
+  
+        <p class="descricao">
+          {{ item.descricaoItem || 'Sem descrição cadastrada.' }}
+        </p>
+  
+        <p class="categoria">
+          Categoria {{ item.idcategoria }}
+        </p>
+  
+        <div class="rodape-card">
+          <strong>{{ formatarPreco(item.preco) }}</strong>
+  
+          <button
+            type="button"
+            (click)="adicionarAoCarrinho(item)"
+          >
+            + Adicionar
+          </button>
+        </div>
+  
+      </article>
+  
+      <div
+        class="vazio"
+        *ngIf="itensFiltrados.length === 0"
+      >
+        <h2>Nenhum item encontrado</h2>
+        <p>Tente mudar a pesquisa ou os filtros.</p>
+      </div>
+  
+    </div>
+  
+  </section>

@@ -1,0 +1,248 @@
+<main class="pagina-pedidos">
+
+  <header class="cabecalho-pedidos">
+    <div>
+      <h1>Meus Pedidos</h1>
+      <p>Consulte os pedidos e atendimentos registrados.</p>
+    </div>
+
+    <button
+      type="button"
+      class="botao-atualizar"
+      (click)="atualizar()"
+      [disabled]="carregando"
+    >
+      {{ carregando ? 'Carregando...' : 'Atualizar pedidos' }}
+    </button>
+  </header>
+
+  <!-- Mensagens de retorno -->
+  <div class="mensagem-sucesso" *ngIf="mensagemSucesso">
+    {{ mensagemSucesso }}
+  </div>
+
+  <div class="mensagem-erro" *ngIf="mensagemErro" role="alert">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Painel de Detalhes do Pedido Consultado por ID -->
+  <section class="card-pedido painel-detalhes" *ngIf="modalConsultaAberto && pedidoSelecionado" style="margin-bottom: 24px; border: 2px solid #2563eb;">
+    <header class="pedido-cabecalho">
+      <div>
+        <h2>Detalhes do Pedido #{{ pedidoSelecionado.idAtendimento }}</h2>
+        <p class="data-pedido">
+          Data: {{ pedidoSelecionado.dataAtendimento | date:'dd/MM/yyyy':'':'pt-BR' }}
+        </p>
+      </div>
+
+      <span class="status" [ngClass]="classeStatus(pedidoSelecionado.status)">
+        {{ nomeStatus(pedidoSelecionado.status) }}
+      </span>
+    </header>
+
+    <div class="dados-pedido" style="margin: 16px 0;">
+      <p><strong>Cliente:</strong> {{ pedidoSelecionado.nomeCliente }}</p>
+      <p><strong>Total de itens:</strong> {{ quantidadeItens(pedidoSelecionado) }} unidade(s)</p>
+    </div>
+
+    <div class="itens-pedido">
+      <h3>Itens inclusos</h3>
+      <p *ngIf="!pedidoSelecionado.itens || pedidoSelecionado.itens.length === 0">
+        Este pedido não possui itens detalhados.
+      </p>
+
+      <div class="item-pedido" *ngFor="let item of pedidoSelecionado.itens">
+        <div class="item-descricao">
+          <strong>{{ item.nomeItem }}</strong>
+          <span>Funcionário: {{ item.nomeFuncionario || 'Não informado' }}</span>
+          <span>
+            {{ item.quantidade }} × {{ item.valorUnitario | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+          </span>
+        </div>
+        <strong class="item-subtotal">
+          {{ item.subtotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}
+        </strong>
+      </div>
+    </div>
+
+    <footer class="pedido-rodape" style="margin-top: 16px;">
+      <span>Valor Total</span>
+      <strong>{{ totalPedido(pedidoSelecionado) | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</strong>
+    </footer>
+
+    <div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+      <button type="button" class="botao-atualizar" (click)="fecharConsulta()">
+        Fechar consulta
+      </button>
+    </div>
+  </section>
+
+  <!-- Campo de pesquisa rápida e busca por ID -->
+  <section class="filtros" style="display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end;">
+
+    <!-- Busca por ID -->
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <label for="pesquisaId">Buscar por ID</label>
+      <div style="display: flex; gap: 8px;">
+        <input
+          id="pesquisaId"
+          type="number"
+          style="width: 140px;"
+          [(ngModel)]="pesquisaId"
+          placeholder="Nº Pedido..."
+          (keyup.enter)="buscarPorId()"
+        />
+        <button
+          type="button"
+          class="botao-atualizar"
+          (click)="buscarPorId()"
+          [disabled]="buscandoId"
+        >
+          {{ buscandoId ? 'Buscando...' : 'Buscar ID' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Filtro rápido por Texto -->
+    <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 6px;">
+      <label for="pesquisa">Pesquisar por Cliente ou Texto</label>
+      <input
+        id="pesquisa"
+        type="text"
+        [(ngModel)]="pesquisa"
+        placeholder="Digite o número do pedido ou nome do cliente"
+      />
+    </div>
+
+  </section>
+
+  <!-- Carregamento -->
+  <p class="mensagem-carregamento" *ngIf="carregando">
+    Carregando pedidos...
+  </p>
+
+  <!-- Nenhum pedido cadastrado -->
+  <section
+    class="estado-vazio"
+    *ngIf="!carregando && !mensagemErro && pedidos.length === 0"
+  >
+    <h2>Nenhum pedido encontrado</h2>
+    <p>Os pedidos registrados aparecerão aqui.</p>
+
+    <a routerLink="/catalogo" class="botao-catalogo">
+      Ir para o catálogo
+    </a>
+  </section>
+
+  <!-- Nenhum resultado da pesquisa -->
+  <p
+    class="estado-vazio"
+    *ngIf="
+      !carregando &&
+      !mensagemErro &&
+      pedidos.length > 0 &&
+      pedidosFiltrados.length === 0
+    "
+  >
+    Nenhum pedido corresponde à pesquisa.
+  </p>
+
+  <!-- Lista de pedidos -->
+  <section
+    class="lista-pedidos"
+    *ngIf="!carregando && !mensagemErro"
+  >
+    <article
+      class="card-pedido"
+      *ngFor="let pedido of pedidosFiltrados"
+    >
+      <header class="pedido-cabecalho">
+        <div>
+          <h2>Pedido #{{ pedido.idAtendimento }}</h2>
+
+          <p class="data-pedido">
+            Data:
+            {{ pedido.dataAtendimento | date:'dd/MM/yyyy':'':'pt-BR' }}
+          </p>
+        </div>
+
+        <span
+          class="status"
+          [ngClass]="classeStatus(pedido.status)"
+        >
+          {{ nomeStatus(pedido.status) }}
+        </span>
+      </header>
+
+      <div class="dados-pedido">
+        <p>
+          <strong>Cliente:</strong>
+          {{ pedido.nomeCliente }}
+        </p>
+
+        <p>
+          <strong>Itens:</strong>
+          {{ quantidadeItens(pedido) }} unidade(s)
+        </p>
+      </div>
+
+      <div class="itens-pedido">
+        <h3>Itens do pedido</h3>
+
+        <p *ngIf="!pedido.itens || pedido.itens.length === 0">
+          Este pedido não possui itens detalhados.
+        </p>
+
+        <div
+          class="item-pedido"
+          *ngFor="let item of pedido.itens"
+        >
+          <div class="item-descricao">
+            <strong>{{ item.nomeItem }}</strong>
+
+            <span>
+              Funcionário: {{ item.nomeFuncionario }}
+            </span>
+
+            <span>
+              {{ item.quantidade }} ×
+              {{
+                item.valorUnitario
+                  | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+              }}
+            </span>
+          </div>
+
+          <strong class="item-subtotal">
+            {{
+              item.subtotal
+                | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+            }}
+          </strong>
+        </div>
+      </div>
+
+      <footer class="pedido-rodape">
+        <div>
+          <span>Valor total: </span>
+          <strong>
+            {{
+              totalPedido(pedido)
+                | currency:'BRL':'symbol':'1.2-2':'pt-BR'
+            }}
+          </strong>
+        </div>
+
+        <button
+          type="button"
+          class="botao-atualizar"
+          (click)="consultarPedido(pedido)"
+          style="padding: 6px 12px; font-size: 13px;"
+        >
+          Ver detalhes
+        </button>
+      </footer>
+    </article>
+  </section>
+
+</main>

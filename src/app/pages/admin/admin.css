@@ -1,0 +1,75 @@
+:host {
+    display: block;
+    width: 100%;
+  }
+  
+  .container-admin {
+    width: 100%;
+  }
+  
+  .cabecalho-admin {
+    margin-bottom: 20px;
+  }
+  
+  .sobretitulo {
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  
+  .cabecalho-admin h1 {
+    margin: 4px 0 6px;
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 700;
+  }
+  
+  .cabecalho-admin p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+  }
+  
+  /* Barra de Abas Horizontais */
+  .abas-admin {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 12px;
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  }
+  
+  .abas-admin a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  
+  .abas-admin a:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+  
+  .abas-admin a.aba-ativa {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  }
+  
+  .conteudo-modulo {
+    width: 100%;
+  }

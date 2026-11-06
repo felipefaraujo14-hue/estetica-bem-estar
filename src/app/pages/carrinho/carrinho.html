@@ -1,0 +1,124 @@
+
+<main class="pagina-carrinho">
+
+    <header class="cabecalho">
+      <span class="subtitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+      <h1>Meu carrinho</h1>
+      <p>Confira os produtos que você selecionou.</p>
+    </header>
+  
+    <!-- Carrinho vazio -->
+    <section class="carrinho-vazio" *ngIf="itens.length === 0">
+      <h2>Seu carrinho está vazio</h2>
+      <p>Explore nosso catálogo e adicione produtos.</p>
+  
+      <a routerLink="/catalogo" class="botao-principal">
+        Voltar ao catálogo
+      </a>
+    </section>
+  
+    <!-- Carrinho com itens -->
+    <section class="conteudo-carrinho" *ngIf="itens.length > 0">
+  
+      <div class="lista-itens">
+  
+        <article class="item-carrinho" *ngFor="let registro of itens">
+  
+          <div class="informacoes-item">
+            <h2>
+              {{ registro.item.item1 || registro.item.item || 'Item sem nome' }}
+            </h2>
+  
+            <p>
+              {{ registro.item.descricaoItem || 'Sem descrição disponível.' }}
+            </p>
+  
+            <span class="preco-unitario">
+              {{ formatarPreco(registro.item.preco) }} por unidade
+            </span>
+          </div>
+  
+          <div class="controles-item">
+  
+            <label>Quantidade</label>
+  
+            <div class="controle-quantidade">
+              <button
+                type="button"
+                aria-label="Diminuir quantidade"
+                (click)="alterarQuantidade(
+                  registro.item.iditem,
+                  registro.quantidade - 1
+                )">
+                −
+              </button>
+  
+              <span>{{ registro.quantidade }}</span>
+  
+              <button
+                type="button"
+                aria-label="Aumentar quantidade"
+                (click)="alterarQuantidade(
+                  registro.item.iditem,
+                  registro.quantidade + 1
+                )">
+                +
+              </button>
+            </div>
+  
+            <strong>
+              {{ formatarPreco(registro.item.preco * registro.quantidade) }}
+            </strong>
+  
+            <button
+              type="button"
+              class="botao-remover"
+              (click)="removerItem(registro.item.iditem)">
+              Remover
+            </button>
+  
+          </div>
+        </article>
+  
+      </div>
+  
+      <!-- Resumo da compra -->
+      <aside class="resumo-compra">
+  
+        <h2>Resumo da compra</h2>
+  
+        <div class="linha-resumo">
+          <span>Quantidade de unidades</span>
+          <strong>{{ quantidadeTotal }}</strong>
+        </div>
+  
+        <div class="linha-resumo total">
+          <span>Total</span>
+          <strong>{{ formatarPreco(valorTotal) }}</strong>
+        </div>
+  
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="limparCarrinho()">
+          Limpar carrinho
+        </button>
+  
+        <!-- Abre o formulário de finalização -->
+        <a
+          routerLink="/finalizar-pedido"
+          class="botao-principal">
+          Finalizar pedido
+        </a>
+  
+        <a
+          routerLink="/catalogo"
+          class="botao-secundario">
+          Continuar comprando
+        </a>
+  
+      </aside>
+    </section>
+  
+  </main>
+  

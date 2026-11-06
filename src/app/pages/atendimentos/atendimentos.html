@@ -1,0 +1,340 @@
+
+<div class="pagina-atendimentos">
+
+    <!-- Cabeçalho da página -->
+    <div class="cabecalho-pagina">
+      <div>
+        <span class="sobretitulo">ESTÉTICA & BEM-ESTAR</span>
+        <h1>Atendimentos</h1>
+        <p>Consulte e gerencie os atendimentos da empresa.</p>
+      </div>
+  
+      <button
+        type="button"
+        class="botao-atualizar"
+        (click)="carregarAtendimentos()"
+        [disabled]="carregando">
+        ↻ Atualizar
+      </button>
+    </div>
+  
+    <!-- Indicadores -->
+    <div class="resumo">
+      <div class="cartao-resumo">
+        <span>Total de atendimentos</span>
+        <strong>{{ atendimentos.length }}</strong>
+      </div>
+  
+      <div class="cartao-resumo">
+        <span>Pendentes</span>
+        <strong>
+          {{
+            atendimentos.filter(
+              a => normalizarStatus(a.status) === 'pendente'
+            ).length
+          }}
+        </strong>
+      </div>
+  
+      <div class="cartao-resumo">
+        <span>Finalizados</span>
+        <strong>
+          {{
+            atendimentos.filter(
+              a => normalizarStatus(a.status) === 'finalizado'
+            ).length
+          }}
+        </strong>
+      </div>
+    </div>
+  
+    <!-- Pesquisa e filtro -->
+    <div class="filtros">
+      <div class="campo-pesquisa">
+        <label for="pesquisa">Pesquisar atendimento</label>
+        <input
+          id="pesquisa"
+          type="text"
+          [(ngModel)]="pesquisa"
+          placeholder="Digite o nome do cliente ou número..." />
+      </div>
+  
+      <div class="campo-status">
+        <label for="filtroStatus">Filtrar por status</label>
+        <select
+          id="filtroStatus"
+          [(ngModel)]="statusSelecionado">
+  
+          <option value="Todos">Todos os status</option>
+          <option value="A">Ativo</option>
+          <option value="P">Pendente</option>
+          <option value="F">Finalizado</option>
+          <option value="C">Cancelado</option>
+        </select>
+      </div>
+    </div>
+  
+    <!-- Carregamento -->
+    <div
+      class="mensagem carregando"
+      *ngIf="carregando">
+      Carregando atendimentos...
+    </div>
+  
+    <!-- Mensagem de erro -->
+    <div
+      class="mensagem erro"
+      *ngIf="mensagemErro">
+  
+      {{ mensagemErro }}
+  
+      <button
+        type="button"
+        class="botao-atualizar"
+        (click)="carregarAtendimentos()">
+        Tentar novamente
+      </button>
+    </div>
+  
+    <!-- Tabela principal -->
+    <div
+      class="tabela-container"
+      *ngIf="!carregando && !mensagemErro">
+  
+      <table>
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Itens</th>
+            <th>Valor total</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+  
+        <tbody>
+          <tr
+            *ngFor="let atendimento of atendimentosFiltrados">
+  
+            <td class="numero">
+              #{{ atendimento.idAtendimento }}
+            </td>
+  
+            <td>
+              <strong>
+                {{ atendimento.nomeCliente || 'Cliente não informado' }}
+              </strong>
+            </td>
+  
+            <td>
+              {{ formatarData(atendimento.dataAtendimento) }}
+            </td>
+  
+            <td>
+              {{ atendimento.itens?.length ?? 0 }}
+            </td>
+  
+            <td class="valor">
+              {{ formatarMoeda(atendimento.valorTotal) }}
+            </td>
+  
+            <!-- Alteração do status -->
+            <td class="celula-status">
+              <select
+                class="seletor-status"
+                [ngModel]="statusEdicao[atendimento.idAtendimento]"
+                (ngModelChange)="statusEdicao[atendimento.idAtendimento] = $event"
+                [disabled]="atualizandoStatus[atendimento.idAtendimento]"
+                [ngClass]="
+                  'status-' +
+                  normalizarStatus(statusEdicao[atendimento.idAtendimento])
+                "
+                [attr.aria-label]="'Status do atendimento ' + atendimento.idAtendimento">
+  
+                <option value="A">Ativo</option>
+                <option value="P">Pendente</option>
+                <option value="F">Finalizado</option>
+                <option value="C">Cancelado</option>
+              </select>
+  
+              <button
+                type="button"
+                class="botao-salvar-status"
+                (click)="salvarStatus(atendimento)"
+                [disabled]="
+                  atualizandoStatus[atendimento.idAtendimento] ||
+                  !statusEdicao[atendimento.idAtendimento] ||
+                  statusEdicao[atendimento.idAtendimento] ===
+                    (atendimento.status || '').toUpperCase()
+                ">
+  
+                {{
+                  atualizandoStatus[atendimento.idAtendimento]
+                    ? 'Salvando...'
+                    : 'Salvar'
+                }}
+              </button>
+            </td>
+  
+            <!-- Ações -->
+            <td class="acoes">
+              <button
+                type="button"
+                class="botao-detalhes"
+                (click)="verDetalhes(atendimento)">
+                Detalhes
+              </button>
+  
+              <button
+                type="button"
+                class="botao-excluir"
+                (click)="excluirAtendimento(atendimento)">
+                Excluir
+              </button>
+            </td>
+          </tr>
+  
+          <!-- Lista vazia -->
+          <tr *ngIf="atendimentosFiltrados.length === 0">
+            <td colspan="7" class="sem-registros">
+              Nenhum atendimento encontrado.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Modal de detalhes -->
+    <div
+      class="fundo-modal"
+      *ngIf="atendimentoSelecionado"
+      (click)="fecharDetalhes()">
+  
+      <div
+        class="modal-detalhes"
+        (click)="$event.stopPropagation()">
+  
+        <!-- Cabeçalho do modal -->
+        <div class="modal-cabecalho">
+          <div>
+            <span class="sobretitulo">DETALHES</span>
+  
+            <h2>
+              Atendimento #{{ atendimentoSelecionado.idAtendimento }}
+            </h2>
+          </div>
+  
+          <button
+            type="button"
+            class="botao-fechar"
+            aria-label="Fechar detalhes"
+            (click)="fecharDetalhes()">
+            ×
+          </button>
+        </div>
+  
+        <!-- Informações do atendimento -->
+        <div class="informacoes-atendimento">
+          <p>
+            <strong>Cliente:</strong>
+            {{ atendimentoSelecionado.nomeCliente || 'Não informado' }}
+          </p>
+  
+          <p>
+            <strong>Data:</strong>
+            {{ formatarData(atendimentoSelecionado.dataAtendimento) }}
+          </p>
+  
+          <p>
+            <strong>Status:</strong>
+  
+            <span
+              class="status"
+              [ngClass]="
+                'status-' +
+                normalizarStatus(atendimentoSelecionado.status)
+              ">
+              {{ nomeStatus(atendimentoSelecionado.status) }}
+            </span>
+          </p>
+        </div>
+  
+        <!-- Itens do atendimento -->
+        <h3>Itens do atendimento</h3>
+  
+        <div class="tabela-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Funcionário</th>
+                <th>Qtd.</th>
+                <th>Valor unitário</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+  
+            <tbody>
+              <tr
+                *ngFor="let item of atendimentoSelecionado.itens">
+  
+                <td>
+                  {{ item.nomeItem || 'Item #' + item.iditem }}
+                </td>
+  
+                <td>
+                  {{ item.nomeFuncionario || '—' }}
+                </td>
+  
+                <td>
+                  {{ item.quantidade }}
+                </td>
+  
+                <td>
+                  {{ formatarMoeda(item.valorUnitario) }}
+                </td>
+  
+                <td>
+                  {{
+                    formatarMoeda(
+                      item.subtotal ??
+                      item.quantidade * item.valorUnitario
+                    )
+                  }}
+                </td>
+              </tr>
+  
+              <tr
+                *ngIf="!atendimentoSelecionado.itens?.length">
+  
+                <td colspan="5" class="sem-registros">
+                  Nenhum item informado neste atendimento.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+  
+        <!-- Total -->
+        <div class="total-modal">
+          Total:
+          {{ formatarMoeda(atendimentoSelecionado.valorTotal) }}
+        </div>
+  
+        <!-- Rodapé do modal -->
+        <div class="modal-rodape">
+          <button
+            type="button"
+            class="botao-atualizar"
+            (click)="fecharDetalhes()">
+            Fechar
+          </button>
+        </div>
+  
+      </div>
+    </div>
+  
+  </div>
+  

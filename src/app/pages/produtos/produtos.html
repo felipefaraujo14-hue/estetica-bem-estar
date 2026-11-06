@@ -1,0 +1,388 @@
+<div class="pagina-produtos">
+
+  <!-- Cabeçalho da página -->
+  <header class="cabecalho-pagina">
+    <div>
+      <span class="sobretitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+      <h1>Produtos</h1>
+      <p>Cadastre, consulte e atualize os produtos.</p>
+    </div>
+
+    <button
+      type="button"
+      class="botao-principal"
+      (click)="novoProduto()">
+      ＋ Novo produto
+    </button>
+  </header>
+
+  <!-- Mensagens de retorno -->
+  <div class="mensagem sucesso" *ngIf="mensagemSucesso">
+    {{ mensagemSucesso }}
+  </div>
+
+  <div class="mensagem erro" *ngIf="mensagemErro">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Painel de visualização / consulta por ID -->
+  <section class="cartao" *ngIf="modalConsultaAberto && produtoSelecionado">
+    <h2>Detalhes do Produto #{{ obterIdProduto(produtoSelecionado) }}</h2>
+
+    <div class="campos-formulario">
+      <div class="campo">
+        <label>Nome do produto</label>
+        <p>{{ nomeProduto(produtoSelecionado) }}</p>
+      </div>
+
+      <div class="campo">
+        <label>ID da Categoria</label>
+        <p>{{ categoriaProduto(produtoSelecionado) || 'Não informada' }}</p>
+      </div>
+
+      <div class="campo campo-largo">
+        <label>Descrição</label>
+        <p>{{ descricaoProduto(produtoSelecionado) || 'Sem descrição' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Preço Base (R$)</label>
+        <p>{{ formatarPreco(precoDoItem(produtoSelecionado)) }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Preço de Venda (R$)</label>
+        <p>{{ formatarPreco(produtoSelecionado.precoVenda ?? precoDoItem(produtoSelecionado)) }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Tipo</label>
+        <p>{{ tipoProduto(produtoSelecionado) === 'S' ? 'Serviço' : 'Produto' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Situação</label>
+        <p>{{ situacaoProduto(produtoSelecionado) === 'N' ? 'Inativo' : 'Ativo' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Código de Preço</label>
+        <p>{{ produtoSelecionado.codigoPreco || 'N/A' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Unidade</label>
+        <p>{{ produtoSelecionado.unidade || 'UN' }}</p>
+      </div>
+    </div>
+
+    <div class="acoes-formulario">
+      <button type="button" class="botao-secundario" (click)="fecharConsulta()">
+        Fechar
+      </button>
+      <button
+        type="button"
+        class="botao-principal"
+        (click)="editarProduto(produtoSelecionado)">
+        Editar este produto
+      </button>
+    </div>
+  </section>
+
+  <!-- Formulário de cadastro e edição -->
+  <section class="cartao" *ngIf="mostrarFormulario">
+
+    <h2>
+      {{ idEdicao !== null ? 'Editar produto' : 'Novo produto' }}
+    </h2>
+
+    <form #formProduto="ngForm" (ngSubmit)="salvarProduto()">
+
+      <div class="campos-formulario">
+
+        <div class="campo">
+          <label for="item">Nome do produto *</label>
+          <input
+            id="item"
+            name="item"
+            [(ngModel)]="formulario.item"
+            required>
+        </div>
+
+        <div class="campo">
+          <label for="categoria">ID da categoria *</label>
+          <input
+            id="categoria"
+            name="categoria"
+            type="number"
+            min="1"
+            [(ngModel)]="formulario.idcategoria"
+            required>
+        </div>
+
+        <div class="campo campo-largo">
+          <label for="descricao">Descrição</label>
+          <textarea
+            id="descricao"
+            name="descricao"
+            [(ngModel)]="formulario.descricaoItem"
+            rows="3">
+          </textarea>
+        </div>
+
+        <div class="campo">
+          <label for="preco">Preço do item (R$) *</label>
+          <input
+            id="preco"
+            name="preco"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="formulario.preco"
+            required>
+        </div>
+
+        <div class="campo">
+          <label for="precoVenda">Preço de venda (R$)</label>
+          <input
+            id="precoVenda"
+            name="precoVenda"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="formulario.precoVenda">
+        </div>
+
+        <div class="campo">
+          <label for="codigoPreco">Código de preço</label>
+          <input
+            id="codigoPreco"
+            name="codigoPreco"
+            type="number"
+            [(ngModel)]="formulario.codigoPreco">
+        </div>
+
+        <div class="campo">
+          <label for="unidade">Unidade</label>
+          <input
+            id="unidade"
+            name="unidade"
+            [(ngModel)]="formulario.unidade">
+        </div>
+
+        <div class="campo">
+          <label for="tipo">Tipo *</label>
+          <select
+            id="tipo"
+            name="tipo"
+            [(ngModel)]="formulario.tipoItem"
+            required>
+            <option value="P">Produto</option>
+            <option value="S">Serviço</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="ativo">Situação *</label>
+          <select
+            id="ativo"
+            name="ativo"
+            [(ngModel)]="formulario.ativoProdutoServico"
+            required>
+            <option value="S">Ativo</option>
+            <option value="N">Inativo</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Botões do formulário -->
+      <div class="acoes-formulario">
+
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="cancelarFormulario()">
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="botao-principal"
+          [disabled]="salvando || formProduto.invalid">
+          {{
+            salvando
+              ? 'Salvando...'
+              : (idEdicao !== null
+                ? 'Salvar alterações'
+                : 'Cadastrar produto')
+          }}
+        </button>
+
+      </div>
+    </form>
+  </section>
+
+  <!-- Listagem de produtos -->
+  <section class="cartao">
+
+    <div class="barra-tabela">
+      <div>
+        <h2>Lista de produtos</h2>
+        <p>
+          {{ produtosFiltrados.length }} produto(s) encontrado(s)
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <!-- Busca por ID -->
+        <div style="display: flex; gap: 6px;">
+          <input
+            class="campo-pesquisa"
+            style="width: 130px;"
+            type="number"
+            name="pesquisaId"
+            [(ngModel)]="pesquisaId"
+            placeholder="ID do produto"
+            (keyup.enter)="buscarPorId()">
+
+          <button
+            type="button"
+            class="botao-principal"
+            (click)="buscarPorId()"
+            [disabled]="buscandoId">
+            {{ buscandoId ? 'Buscando...' : 'Buscar ID' }}
+          </button>
+        </div>
+
+        <!-- Filtro por Texto -->
+        <input
+          class="campo-pesquisa"
+          type="search"
+          name="pesquisa"
+          [(ngModel)]="pesquisa"
+          placeholder="Pesquisar produto por nome...">
+      </div>
+    </div>
+
+    <!-- Indicador de carregamento -->
+    <div class="estado-carregamento" *ngIf="carregando">
+      Carregando produtos...
+    </div>
+
+    <!-- Tabela -->
+    <div class="tabela-responsiva" *ngIf="!carregando">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Tipo</th>
+            <th>Preço</th>
+            <th>Situação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let produto of produtosFiltrados">
+
+            <!-- ID / Código do Produto -->
+            <td>
+              #{{ obterIdProduto(produto) }}
+            </td>
+
+            <!-- Nome do produto -->
+            <td>
+              <strong>
+                {{ nomeProduto(produto) || 'Nome não informado' }}
+              </strong>
+            </td>
+
+            <!-- Categoria do item -->
+            <td>
+              {{ categoriaProduto(produto) || 'Não informada' }}
+            </td>
+
+            <!-- Tipo do item -->
+            <td>
+              {{ tipoProduto(produto) === 'S' ? 'Serviço' : 'Produto' }}
+            </td>
+
+            <!-- Preço de venda -->
+            <td class="preco">
+              {{
+                formatarPreco(
+                  produto.precoVenda
+                  ?? precoDoItem(produto)
+                  ?? 0
+                )
+              }}
+            </td>
+
+            <!-- Situação do item -->
+            <td>
+              <span
+                class="etiqueta"
+                [class.inativo]="situacaoProduto(produto) === 'N'">
+                {{ situacaoProduto(produto) === 'N' ? 'Inativo' : 'Ativo' }}
+              </span>
+            </td>
+
+            <!-- Ações -->
+            <td class="acoes">
+
+              <button
+                type="button"
+                class="botao-icone visualizar"
+                title="Visualizar produto"
+                (click)="consultarProduto(produto)">
+                👁
+              </button>
+
+              <button
+                type="button"
+                class="botao-icone editar"
+                title="Editar produto"
+                (click)="editarProduto(produto)">
+                ✎
+              </button>
+
+              <button
+                type="button"
+                class="botao-icone excluir"
+                title="Excluir produto"
+                (click)="excluirProduto(produto)">
+                ×
+              </button>
+
+            </td>
+          </tr>
+
+          <!-- Mensagem quando não existem resultados -->
+          <tr *ngIf="produtosFiltrados.length === 0">
+            <td colspan="7" class="sem-registros">
+              Nenhum produto encontrado.
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Rodapé da tabela -->
+    <div class="rodape-tabela">
+      <button
+        type="button"
+        class="botao-secundario"
+        (click)="atualizar()"
+        [disabled]="carregando">
+        ↻ Atualizar lista
+      </button>
+    </div>
+
+  </section>
+</div>

@@ -1,0 +1,453 @@
+:host {
+  display: block;
+  color: var(--cor-texto-principal, #0f172a);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+  /* Variáveis Locais / Componente */
+  --cor-fundo-card: #ffffff;
+  --cor-fundo-suave: #f8fafc;
+  --cor-texto-principal: #0f172a;
+  --cor-texto-secundario: #64748b;
+  --cor-texto-mutado: #94a3b8;
+  --cor-destaque: #2563eb;
+  --cor-destaque-hover: #1d4ed8;
+  --cor-destaque-suave: #eff6ff;
+  --cor-borda: #e2e8f0;
+  --cor-borda-hover: #cbd5e1;
+  --cor-excluir: #ef4444;
+  --cor-excluir-hover: #dc2626;
+  --sombra-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+}
+
+.pagina-produtos {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   CABEÇALHO DA PÁGINA
+   ========================================================================== */
+.cabecalho-pagina {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.sobretitulo {
+  color: var(--cor-destaque);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.cabecalho-pagina h1 {
+  margin: 6px 0;
+  color: var(--cor-texto-principal);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.cabecalho-pagina p,
+.barra-tabela p {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   CARDS E FORMULÁRIO DE PRODUTO
+   ========================================================================== */
+.cartao {
+  margin-bottom: 24px;
+  padding: 24px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 16px;
+  background: var(--cor-fundo-card);
+  box-shadow: var(--sombra-card);
+  box-sizing: border-box;
+}
+
+.cartao h2 {
+  margin: 0 0 6px;
+  color: var(--cor-texto-principal);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Botões */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.botao-principal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--cor-destaque);
+  border-radius: 8px;
+  background: var(--cor-destaque);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.botao-principal:hover:not(:disabled) {
+  background: var(--cor-destaque-hover);
+  border-color: var(--cor-destaque-hover);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.botao-secundario {
+  padding: 10px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--cor-texto-principal);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.botao-secundario:hover:not(:disabled) {
+  background: var(--cor-fundo-suave);
+  border-color: var(--cor-borda-hover);
+}
+
+/* Grid do Formulário */
+.campos-formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.campo-largo {
+  grid-column: 1 / -1;
+}
+
+.campo label {
+  color: var(--cor-texto-principal);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select,
+.campo textarea,
+.campo-pesquisa {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--cor-texto-principal);
+  font: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+/* Parágrafos de leitura no painel de detalhes */
+.campo p {
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--cor-fundo-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  color: var(--cor-texto-principal);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus,
+.campo-pesquisa:focus {
+  outline: 2px solid var(--cor-destaque);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder,
+.campo-pesquisa::placeholder {
+  color: var(--cor-texto-mutado);
+}
+
+.acoes-formulario {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* ==========================================================================
+   BARRA DE PESQUISA E TABELA DE PRODUTOS
+   ========================================================================== */
+.barra-tabela {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.barra-tabela h2 {
+  margin: 0 0 4px;
+  color: var(--cor-texto-principal);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.campo-pesquisa {
+  max-width: 340px;
+}
+
+.tabela-responsiva {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--sombra-card);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+thead {
+  background: var(--cor-fundo-suave);
+}
+
+th {
+  padding: 14px 16px;
+  color: var(--cor-texto-secundario);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--cor-borda);
+  color: var(--cor-texto-principal);
+  font-size: 14px;
+  vertical-align: middle;
+}
+
+tbody tr {
+  transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+  background: var(--cor-fundo-suave);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td small {
+  display: block;
+  margin-top: 4px;
+  color: var(--cor-texto-secundario);
+  font-size: 12px;
+}
+
+.preco {
+  color: var(--cor-texto-principal);
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* Badges / Etiquetas de Status */
+.etiqueta {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--cor-destaque-suave);
+  color: var(--cor-destaque);
+  border: 1px solid #bfdbfe;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.etiqueta.inativo {
+  background: #fef2f2;
+  color: var(--cor-excluir);
+  border-color: #fecaca;
+}
+
+.acoes {
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Ícones de Ação */
+.botao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin: 0 2px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.botao-icone.visualizar {
+  color: var(--cor-texto-secundario);
+}
+
+.botao-icone.visualizar:hover {
+  border-color: var(--cor-borda-hover);
+  background: var(--cor-fundo-suave);
+  color: var(--cor-texto-principal);
+}
+
+.botao-icone.editar {
+  color: var(--cor-destaque);
+}
+
+.botao-icone.editar:hover {
+  border-color: #bfdbfe;
+  background: var(--cor-destaque-suave);
+}
+
+.botao-icone.excluir {
+  color: var(--cor-excluir);
+}
+
+.botao-icone.excluir:hover {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: var(--cor-excluir-hover);
+}
+
+/* ==========================================================================
+   ESTADOS DE FEEDBACK (Vazio, Carregando e Alertas)
+   ========================================================================== */
+.sem-registros,
+.estado-carregamento {
+  padding: 42px 16px;
+  color: var(--cor-texto-secundario);
+  text-align: center;
+  font-size: 14px;
+}
+
+.rodape-tabela {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.mensagem {
+  margin-bottom: 18px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mensagem.sucesso {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.mensagem.erro {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+@media (max-width: 900px) {
+  .pagina-produtos {
+    padding: 24px 18px;
+  }
+
+  .cabecalho-pagina {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .barra-tabela {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .campo-pesquisa {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .pagina-produtos {
+    padding: 18px 12px;
+  }
+
+  .cartao {
+    padding: 18px 16px;
+  }
+
+  .campos-formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-largo {
+    grid-column: auto;
+  }
+
+  .acoes-formulario {
+    flex-direction: column-reverse;
+  }
+
+  .acoes-formulario button {
+    width: 100%;
+  }
+}

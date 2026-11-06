@@ -1,0 +1,265 @@
+.catalogo {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px;
+  color: var(--cor-texto-principal, #0f172a);
+}
+
+.titulo-pagina {
+  margin-bottom: 30px;
+}
+
+.subtitulo {
+  color: var(--cor-destaque, #2563eb);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.titulo-pagina h1 {
+  margin: 6px 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--cor-texto-principal, #0f172a);
+}
+
+.titulo-pagina p {
+  color: var(--cor-texto-secundario, #64748b);
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   FILTROS DE BUSCA
+   ========================================================================== */
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-end;
+  padding: 22px;
+  margin-bottom: 24px;
+  background: var(--cor-fundo-card, #ffffff);
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: 14px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.campo.pesquisa {
+  flex: 1;
+}
+
+.campo label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto-principal, #0f172a);
+}
+
+.campo input,
+.campo select {
+  min-height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: 8px;
+  background: var(--cor-fundo-card, #ffffff);
+  color: var(--cor-texto-principal, #0f172a);
+  font: inherit;
+  transition: all 0.2s ease;
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: 2px solid var(--cor-destaque, #2563eb);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.resultado {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--cor-texto-secundario, #64748b);
+  font-size: 14px;
+}
+
+.contador-carrinho {
+  font-weight: 700;
+  color: var(--cor-destaque, #2563eb);
+}
+
+/* ==========================================================================
+   GRADE DE PRODUTOS & CARDS
+   ========================================================================== */
+.grade-produtos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.produto-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 270px;
+  padding: 22px;
+  background: var(--cor-fundo-card, #ffffff);
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.produto-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  border-color: var(--cor-borda-hover, #cbd5e1);
+}
+
+.icone-produto {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: #eff6ff; /* Azul bem suave */
+  color: var(--cor-destaque, #2563eb);
+  font-size: 24px;
+}
+
+/* Badges de Tipo (Produto / Serviço) */
+.tipo {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tipo.servico {
+  background: #f3e8ff; /* Roxo suave */
+  color: #7e22ce;      /* Roxo vibrante */
+}
+
+.produto-card h2 {
+  margin: 14px 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--cor-texto-principal, #0f172a);
+}
+
+.descricao {
+  flex: 1;
+  color: var(--cor-texto-secundario, #64748b);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.categoria {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 8px;
+}
+
+.rodape-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cor-borda, #e2e8f0);
+}
+
+.rodape-card strong {
+  color: var(--cor-texto-principal, #0f172a);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.rodape-card button,
+.erro button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--cor-destaque, #2563eb);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.rodape-card button:hover,
+.erro button:hover {
+  background: var(--cor-destaque-hover, #1d4ed8);
+}
+
+/* ==========================================================================
+   ESTADOS DE FEEDBACK (Status, Erro e Vazio)
+   ========================================================================== */
+.status,
+.erro,
+.vazio {
+  padding: 32px 24px;
+  border-radius: 14px;
+  background: var(--cor-fundo-card, #ffffff);
+  border: 1px solid var(--cor-borda, #e2e8f0);
+  text-align: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.erro {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.vazio {
+  grid-column: 1 / -1;
+  color: var(--cor-texto-secundario, #64748b);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE
+   ========================================================================== */
+@media (max-width: 900px) {
+  .grade-produtos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .catalogo {
+    padding: 20px 16px;
+  }
+
+  .titulo-pagina h1 {
+    font-size: 26px;
+  }
+
+  .grade-produtos {
+    grid-template-columns: 1fr;
+  }
+
+  .filtros {
+    padding: 16px;
+  }
+
+  .campo,
+  .campo.pesquisa {
+    width: 100%;
+  }
+}

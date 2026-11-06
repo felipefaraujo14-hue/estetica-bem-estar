@@ -1,0 +1,532 @@
+/* ========================================
+   TELA DE ESTOQUE
+   ======================================== */
+
+   :host {
+    display: block;
+    min-height: 100%;
+    color: var(--cor-texto-principal, #0f172a);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  
+    /* Variáveis Locais / Integradas */
+    --cor-principal: #0f172a;        /* Slate 900 */
+    --cor-secundaria: #2563eb;       /* Royal Blue */
+    --cor-secundaria-hover: #1d4ed8; /* Blue Hover */
+    --cor-fundo: #f8fafc;            /* Slate 50 */
+    --cor-borda: #e2e8f0;            /* Slate 200 */
+    --cor-borda-hover: #cbd5e1;      /* Slate 300 */
+    --cor-texto: #0f172a;
+    --cor-texto-secundario: #64748b; /* Slate 500 */
+    --cor-texto-mutado: #94a3b8;
+    --sombra-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Área principal */
+  .pagina-produtos,
+  .container-estoque,
+  main,
+  .conteudo {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  
+  /* ==========================================================================
+     CABEÇALHO DA PÁGINA
+     ========================================================================== */
+  .cabecalho-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  
+  .sobretitulo {
+    color: var(--cor-secundaria);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  
+  .cabecalho-pagina h1,
+  h1 {
+    margin: 6px 0 12px;
+    color: var(--cor-principal);
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  
+  .cabecalho-pagina p,
+  .barra-tabela p,
+  p {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  /* ==========================================================================
+     BOTÕES DE AÇÃO
+     ========================================================================== */
+  button,
+  .botao-principal,
+  .botao-secundario {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  
+  .botao-principal {
+    border: 1px solid var(--cor-secundaria);
+    background: var(--cor-secundaria);
+    color: #ffffff;
+  }
+  
+  .botao-principal:hover:not(:disabled) {
+    background: var(--cor-secundaria-hover);
+    border-color: var(--cor-secundaria-hover);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  }
+  
+  .botao-secundario {
+    border: 1px solid var(--cor-borda);
+    background: #ffffff;
+    color: var(--cor-texto);
+  }
+  
+  .botao-secundario:hover:not(:disabled) {
+    background: var(--cor-fundo);
+    border-color: var(--cor-borda-hover);
+  }
+  
+  button:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  
+  /* Ícone de Ação (Visualizar) */
+  .botao-icone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-height: auto;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    font-size: 16px;
+    color: var(--cor-texto-secundario);
+  }
+  
+  .botao-icone.visualizar:hover {
+    border-color: var(--cor-borda-hover);
+    background: var(--cor-fundo);
+    color: var(--cor-principal);
+  }
+  
+  /* ==========================================================================
+     INDICADORES DO ESTOQUE (KPI DASHBOARD)
+     ========================================================================== */
+  .cards-estoque,
+  .resumo-estoque,
+  .dashboard-estoque {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin: 20px 0 28px;
+  }
+  
+  .indicador-estoque,
+  .card,
+  .card-estoque,
+  .card-resumo {
+    min-width: 0;
+    padding: 24px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: var(--sombra-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  
+  .indicador-estoque:hover,
+  .card:hover,
+  .card-estoque:hover,
+  .card-resumo:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    border-color: var(--cor-borda-hover);
+  }
+  
+  .indicador-titulo,
+  .card p,
+  .card-estoque p,
+  .card-resumo p {
+    display: block;
+    margin: 0 0 8px;
+    color: var(--cor-texto-secundario);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .indicador-estoque strong,
+  .card h3,
+  .card-estoque h3,
+  .card-resumo h3 {
+    display: block;
+    margin: 0 0 6px;
+    color: var(--cor-principal);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  .indicador-estoque small,
+  .card small,
+  .card-estoque small,
+  .card-resumo small {
+    display: block;
+    color: var(--cor-texto-secundario);
+    font-size: 12px;
+  }
+  
+  /* Destaques visuais para os indicadores */
+  .indicador-estoque.alerta,
+  .card-estoque-baixo,
+  .estoque-baixo-card {
+    border-left: 4px solid #f59e0b; /* Amber 500 */
+  }
+  
+  .indicador-estoque.sem-estoque,
+  .card-sem-estoque,
+  .sem-estoque-card {
+    border-left: 4px solid #ef4444; /* Red 500 */
+  }
+  
+  /* ==========================================================================
+     CARDS E PAINÉIS DE FORMULÁRIO / DETALHES
+     ========================================================================== */
+  .cartao {
+    margin-bottom: 24px;
+    padding: 24px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: var(--sombra-card);
+  }
+  
+  .cartao h2,
+  h2 {
+    margin: 0 0 16px;
+    color: var(--cor-principal);
+    font-size: 20px;
+    font-weight: 700;
+  }
+  
+  .campos-formulario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 16px;
+  }
+  
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .campo label {
+    color: var(--cor-principal);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  
+  .campo p {
+    margin: 0;
+    padding: 10px 14px;
+    background: var(--cor-fundo);
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    color: var(--cor-principal);
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .acoes-formulario {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  
+  /* ==========================================================================
+     BARRA DE PESQUISA E FILTROS
+     ========================================================================== */
+  .barra-tabela {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  
+  .campo-pesquisa,
+  input[type='text'],
+  input[type='search'],
+  input[type='number'],
+  input:not([type]) {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    outline: none;
+    background: #ffffff;
+    color: var(--cor-texto);
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+  }
+  
+  .campo-pesquisa:focus,
+  input[type='text']:focus,
+  input[type='search']:focus,
+  input[type='number']:focus,
+  input:not([type]):focus {
+    border-color: transparent;
+    outline: 2px solid var(--cor-secundaria);
+    outline-offset: 1px;
+  }
+  
+  input::placeholder {
+    color: var(--cor-texto-mutado);
+  }
+  
+  /* ==========================================================================
+     TABELA DE PRODUTOS NO ESTOQUE
+     ========================================================================== */
+  .tabela-responsiva,
+  .tabela-container,
+  .table-container,
+  .tabela-estoque {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--cor-borda);
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: var(--sombra-card);
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #ffffff;
+    font-size: 14px;
+    text-align: left;
+  }
+  
+  thead {
+    background: var(--cor-fundo);
+  }
+  
+  th {
+    padding: 14px 18px;
+    color: var(--cor-texto-secundario);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--cor-borda);
+  }
+  
+  td {
+    padding: 14px 18px;
+    color: #334155;
+    border-bottom: 1px solid var(--cor-borda);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  
+  tbody tr {
+    transition: background 0.15s ease;
+  }
+  
+  tbody tr:hover {
+    background: var(--cor-fundo);
+  }
+  
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .preco {
+    color: var(--cor-principal);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  
+  .acoes {
+    white-space: nowrap;
+    text-align: center;
+  }
+  
+  /* ==========================================================================
+     BADGES DE SITUAÇÃO DO ESTOQUE
+     ========================================================================== */
+  .etiqueta,
+  .status,
+  .situacao {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+  
+  .etiqueta.estoque-baixo,
+  .status-baixo,
+  .situacao-baixo {
+    background: #fffbeb;
+    color: #b45309;
+    border-color: #fde68a;
+  }
+  
+  .etiqueta.inativo,
+  .status-sem-estoque,
+  .situacao-sem-estoque {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+  }
+  
+  /* ==========================================================================
+     ALERTAS E FEEDBACKS
+     ========================================================================== */
+  .mensagem {
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+  
+  .mensagem.erro,
+  .mensagem-erro,
+  .erro {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #dc2626;
+  }
+  
+  .mensagem.sucesso,
+  .mensagem-sucesso {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #15803d;
+  }
+  
+  .estado-carregamento,
+  .carregando,
+  .sem-registros,
+  .sem-resultados {
+    padding: 38px 16px;
+    color: var(--cor-texto-secundario);
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .rodape-tabela {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  /* ==========================================================================
+     RESPONSIVIDADE
+     ========================================================================== */
+  @media (min-width: 1000px) {
+    .cards-estoque,
+    .resumo-estoque,
+    .dashboard-estoque {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .cabecalho-pagina,
+    .barra-tabela {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .campos-formulario {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  @media (max-width: 650px) {
+    .pagina-produtos,
+    .container-estoque,
+    main,
+    .conteudo {
+      padding: 20px 16px;
+    }
+  
+    h1 {
+      font-size: 26px;
+    }
+  
+    .cards-estoque,
+    .resumo-estoque,
+    .dashboard-estoque {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  
+    .indicador-estoque,
+    .card,
+    .card-estoque,
+    .card-resumo {
+      padding: 18px;
+    }
+  }

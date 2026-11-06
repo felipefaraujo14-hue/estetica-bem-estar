@@ -1,0 +1,224 @@
+<div class="pagina-produtos">
+
+  <!-- Cabeçalho -->
+  <header class="cabecalho-pagina">
+    <div>
+      <span class="sobretitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+      <h1>Estoque</h1>
+      <p>Consulte a quantidade disponível dos produtos.</p>
+    </div>
+
+    <button
+      type="button"
+      class="botao-principal"
+      (click)="atualizar()"
+      [disabled]="carregando">
+      ↻ Atualizar estoque
+    </button>
+  </header>
+
+  <!-- Mensagens de retorno -->
+  <div class="mensagem sucesso" *ngIf="mensagemSucesso">
+    {{ mensagemSucesso }}
+  </div>
+
+  <div class="mensagem erro" *ngIf="mensagemErro">
+    {{ mensagemErro }}
+  </div>
+
+  <!-- Painel de visualização / consulta por ID -->
+  <section class="cartao" *ngIf="modalConsultaAberto && estoqueSelecionado">
+    <h2>Detalhes do Item no Estoque #{{ estoqueSelecionado.iditem }}</h2>
+
+    <div class="campos-formulario">
+      <div class="campo">
+        <label>Nome do Produto</label>
+        <p>{{ estoqueSelecionado.nomeProduto || 'Não informado' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>ID do Produto</label>
+        <p>#{{ estoqueSelecionado.iditem }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Quantidade em Estoque</label>
+        <p><strong>{{ estoqueSelecionado.quantidadeEstoque }}</strong> {{ estoqueSelecionado.unidade || 'UN' }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Preço de Venda</label>
+        <p>{{ formatarPreco(estoqueSelecionado.precoVenda) }}</p>
+      </div>
+
+      <div class="campo">
+        <label>Situação do Estoque</label>
+        <p>
+          <span
+            class="etiqueta"
+            [class.inativo]="estoqueSelecionado.quantidadeEstoque === 0"
+            [class.estoque-baixo]="estoqueSelecionado.quantidadeEstoque > 0 && estoqueSelecionado.quantidadeEstoque <= 5">
+            {{ situacaoEstoque(estoqueSelecionado.quantidadeEstoque) }}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div class="acoes-formulario">
+      <button type="button" class="botao-secundario" (click)="fecharConsulta()">
+        Fechar
+      </button>
+    </div>
+  </section>
+
+  <!-- Indicadores do estoque -->
+  <section class="resumo-estoque">
+
+    <article class="indicador-estoque">
+      <span class="indicador-titulo">Produtos cadastrados</span>
+      <strong>{{ estoques.length }}</strong>
+      <small>Produtos com registro no estoque</small>
+    </article>
+
+    <article class="indicador-estoque">
+      <span class="indicador-titulo">Unidades disponíveis</span>
+      <strong>{{ quantidadeTotal }}</strong>
+      <small>Soma das quantidades em estoque</small>
+    </article>
+
+    <article class="indicador-estoque alerta">
+      <span class="indicador-titulo">Estoque baixo</span>
+      <strong>{{ produtosEstoqueBaixo }}</strong>
+      <small>Produtos com até 5 unidades</small>
+    </article>
+
+    <article class="indicador-estoque sem-estoque">
+      <span class="indicador-titulo">Sem estoque</span>
+      <strong>{{ produtosSemEstoque }}</strong>
+      <small>Produtos com quantidade zero</small>
+    </article>
+
+  </section>
+
+  <!-- Tabela de estoque -->
+  <section class="cartao">
+
+    <div class="barra-tabela">
+      <div>
+        <h2>Produtos em estoque</h2>
+        <p>
+          {{ estoquesFiltrados.length }} produto(s) encontrado(s)
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <!-- Busca por ID -->
+        <div style="display: flex; gap: 6px;">
+          <input
+            class="campo-pesquisa"
+            style="width: 130px;"
+            type="number"
+            name="pesquisaId"
+            [(ngModel)]="pesquisaId"
+            placeholder="Código / ID..."
+            (keyup.enter)="buscarPorId()">
+
+          <button
+            type="button"
+            class="botao-principal"
+            (click)="buscarPorId()"
+            [disabled]="buscandoId">
+            {{ buscandoId ? 'Buscando...' : 'Buscar ID' }}
+          </button>
+        </div>
+
+        <!-- Filtro Rápido -->
+        <input
+          class="campo-pesquisa"
+          type="search"
+          name="pesquisa"
+          [(ngModel)]="pesquisa"
+          placeholder="Pesquisar produto...">
+      </div>
+    </div>
+
+    <div class="estado-carregamento" *ngIf="carregando">
+      Carregando estoque...
+    </div>
+
+    <div class="tabela-responsiva" *ngIf="!carregando">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Unidade</th>
+            <th>Preço de venda</th>
+            <th>Situação</th>
+            <th style="text-align: center;">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let estoque of estoquesFiltrados">
+            <td>#{{ estoque.iditem }}</td>
+
+            <td>
+              <strong>{{ estoque.nomeProduto }}</strong>
+            </td>
+
+            <td>
+              <strong>{{ estoque.quantidadeEstoque }}</strong>
+            </td>
+
+            <td>{{ estoque.unidade }}</td>
+
+            <td class="preco">
+              {{ formatarPreco(estoque.precoVenda) }}
+            </td>
+
+            <td>
+              <span
+                class="etiqueta"
+                [class.inativo]="estoque.quantidadeEstoque === 0"
+                [class.estoque-baixo]="
+                  estoque.quantidadeEstoque > 0 &&
+                  estoque.quantidadeEstoque <= 5
+                ">
+                {{ situacaoEstoque(estoque.quantidadeEstoque) }}
+              </span>
+            </td>
+
+            <td class="acoes">
+              <button
+                type="button"
+                class="botao-icone visualizar"
+                title="Visualizar produto em estoque"
+                (click)="consultarEstoque(estoque)">
+                👁
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="estoquesFiltrados.length === 0">
+            <td colspan="7" class="sem-registros">
+              Nenhum produto encontrado.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rodape-tabela">
+      <button
+        type="button"
+        class="botao-secundario"
+        (click)="atualizar()"
+        [disabled]="carregando">
+        ↻ Atualizar lista
+      </button>
+    </div>
+
+  </section>
+</div>

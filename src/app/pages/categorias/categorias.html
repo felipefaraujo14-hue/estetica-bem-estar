@@ -1,0 +1,212 @@
+<div class="pagina-produtos">
+
+    <header class="cabecalho-pagina">
+      <div>
+        <span class="sobretitulo">ESTÉTICA &amp; BEM-ESTAR</span>
+        <h1>Categorias</h1>
+        <p>Cadastre, consulte e gerencie as categorias dos produtos e serviços.</p>
+      </div>
+  
+      <button
+        type="button"
+        class="botao-principal"
+        (click)="novaCategoria()">
+        ＋ Nova categoria
+      </button>
+    </header>
+  
+    <div class="mensagem sucesso" *ngIf="mensagemSucesso">
+      {{ mensagemSucesso }}
+    </div>
+  
+    <div class="mensagem erro" *ngIf="mensagemErro">
+      {{ mensagemErro }}
+    </div>
+  
+    <!-- Painel de visualização / consulta por ID -->
+    <section class="cartao" *ngIf="modalConsultaAberto && categoriaSelecionada">
+      <h2>Detalhes da Categoria #{{ categoriaSelecionada.idcategoria }}</h2>
+  
+      <div class="campos-formulario">
+        <div class="campo">
+          <label>Nome da Categoria</label>
+          <p>{{ obterNomeCategoria(categoriaSelecionada) }}</p>
+        </div>
+  
+        <div class="campo campo-largo">
+          <label>Descrição</label>
+          <p>{{ categoriaSelecionada.descricao || 'Sem descrição' }}</p>
+        </div>
+      </div>
+  
+      <div class="acoes-formulario">
+        <button type="button" class="botao-secundario" (click)="fecharConsulta()">
+          Fechar
+        </button>
+        <button
+          type="button"
+          class="botao-principal"
+          (click)="editarCategoria(categoriaSelecionada)">
+          Editar esta categoria
+        </button>
+      </div>
+    </section>
+  
+    <!-- Formulário de cadastro / edição -->
+    <section class="cartao" *ngIf="mostrarFormulario">
+      <h2>
+        {{ idEdicao !== null ? 'Editar categoria' : 'Nova categoria' }}
+      </h2>
+  
+      <form #formCat="ngForm" (ngSubmit)="salvarCategoria()">
+  
+        <div class="campos-formulario">
+  
+          <div class="campo campo-largo">
+            <label for="nomeCat">Nome da Categoria *</label>
+            <input
+              id="nomeCat"
+              name="nomeCat"
+              [(ngModel)]="formulario.categoria"
+              required>
+          </div>
+  
+          <div class="campo campo-largo">
+            <label for="descCat">Descrição</label>
+            <textarea
+              id="descCat"
+              name="descCat"
+              [(ngModel)]="formulario.descricao"
+              rows="3">
+            </textarea>
+          </div>
+  
+        </div>
+  
+        <div class="acoes-formulario">
+          <button
+            type="button"
+            class="botao-secundario"
+            (click)="cancelarFormulario()">
+            Cancelar
+          </button>
+  
+          <button
+            type="submit"
+            class="botao-principal"
+            [disabled]="salvando || formCat.invalid">
+            {{ salvando ? 'Salvando...' : (idEdicao !== null ? 'Salvar alterações' : 'Cadastrar categoria') }}
+          </button>
+        </div>
+  
+      </form>
+    </section>
+  
+    <!-- Listagem -->
+    <section class="cartao">
+  
+      <div class="barra-tabela">
+        <div>
+          <h2>Lista de categorias</h2>
+          <p>{{ categoriasFiltradas.length }} categoria(s) encontrada(s)</p>
+        </div>
+  
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <!-- Busca por ID -->
+          <div style="display: flex; gap: 6px;">
+            <input
+              class="campo-pesquisa"
+              style="width: 130px;"
+              type="number"
+              name="pesquisaId"
+              [(ngModel)]="pesquisaId"
+              placeholder="Código / ID..."
+              (keyup.enter)="buscarPorId()">
+  
+            <button
+              type="button"
+              class="botao-principal"
+              (click)="buscarPorId()"
+              [disabled]="buscandoId">
+              {{ buscandoId ? 'Buscando...' : 'Buscar ID' }}
+            </button>
+          </div>
+  
+          <!-- Filtro Rápido -->
+          <input
+            class="campo-pesquisa"
+            type="search"
+            name="pesquisaCat"
+            [(ngModel)]="pesquisa"
+            placeholder="Pesquisar categoria...">
+        </div>
+      </div>
+  
+      <div class="estado-carregamento" *ngIf="carregando">
+        Carregando categorias...
+      </div>
+  
+      <div class="tabela-responsiva" *ngIf="!carregando">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nome</th>
+              <th>Descrição</th>
+              <th style="text-align: center;">Ações</th>
+            </tr>
+          </thead>
+  
+          <tbody>
+            <tr *ngFor="let cat of categoriasFiltradas">
+              <td>#{{ cat.idcategoria }}</td>
+              <td><strong>{{ obterNomeCategoria(cat) }}</strong></td>
+              <td>{{ cat.descricao || 'Sem descrição' }}</td>
+              <td class="acoes">
+                <button
+                  type="button"
+                  class="botao-icone visualizar"
+                  title="Visualizar categoria"
+                  (click)="consultarCategoria(cat)">
+                  👁
+                </button>
+  
+                <button
+                  type="button"
+                  class="botao-icone editar"
+                  title="Editar categoria"
+                  (click)="editarCategoria(cat)">
+                  ✎
+                </button>
+  
+                <button
+                  type="button"
+                  class="botao-icone excluir"
+                  title="Excluir categoria"
+                  (click)="excluirCategoria(cat)">
+                  ×
+                </button>
+              </td>
+            </tr>
+  
+            <tr *ngIf="categoriasFiltradas.length === 0">
+              <td colspan="4" class="sem-registros">
+                Nenhuma categoria encontrada.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div class="rodape-tabela">
+        <button
+          type="button"
+          class="botao-secundario"
+          (click)="atualizar()"
+          [disabled]="carregando">
+          ↻ Atualizar lista
+        </button>
+      </div>
+  
+    </section>
+  </div>

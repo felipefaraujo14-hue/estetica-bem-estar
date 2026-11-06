@@ -1,0 +1,160 @@
+<div class="container-finalizar">
+
+  <header class="cabecalho-pagina">
+    <span class="subtitulo">CHECKOUT</span>
+    <h1>Finalizar pedido</h1>
+    <p>Confira os dados antes de registrar o atendimento.</p>
+  </header>
+
+  <!-- MENSAGENS -->
+  <div class="mensagem-alerta erro" *ngIf="mensagemErro">
+    ⚠️ {{ mensagemErro }}
+  </div>
+
+  <div class="mensagem-alerta sucesso" *ngIf="mensagemSucesso">
+    ✅ {{ mensagemSucesso }}
+  </div>
+
+  <div class="grid-checkout">
+
+    <!-- COLUNA ESQUERDA: DADOS -->
+    <div class="coluna-dados">
+
+      <!-- 1. DADOS DO CLIENTE -->
+      <section class="bloco-card">
+        <h3>1. Dados do cliente</h3>
+
+        <div class="grupo-campo">
+          <label for="cpfBusca">CPF do cliente</label>
+          <input
+            type="text"
+            id="cpfBusca"
+            [(ngModel)]="cpfBusca"
+            (ngModelChange)="buscarPorCpf()"
+            placeholder="Digite o CPF..."
+          />
+        </div>
+
+        <div class="grupo-campo">
+          <label for="selectCliente">Selecionar cliente cadastrado</label>
+          <select
+            id="selectCliente"
+            [ngModel]="idCliente"
+            (change)="selecionarCliente($event)"
+          >
+            <option [value]="null">-- Selecione um cliente --</option>
+            <option *ngFor="let cliente of clientesFiltrados" [value]="cliente.idPessoa ?? cliente.idpessoa">
+              {{ cliente.nome }} - CPF: {{ cliente.cpf }}
+            </option>
+          </select>
+        </div>
+
+        <!-- RESUMO DO CLIENTE SELECIONADO -->
+        <div class="resumo-detalhes" *ngIf="clienteSelecionado">
+          <h4>Dados cadastrais</h4>
+          <div class="grid-info">
+            <div>
+              <small>Nome completo</small>
+              <strong>{{ clienteSelecionado.nome }}</strong>
+            </div>
+            <div>
+              <small>CPF</small>
+              <strong>{{ clienteSelecionado.cpf }}</strong>
+            </div>
+            <div>
+              <small>Data de nascimento</small>
+              <strong>{{ clienteSelecionado.dataNascimento | date:'dd/MM/yyyy' }}</strong>
+            </div>
+            <div>
+              <small>Sexo</small>
+              <strong>{{ clienteSelecionado.sexo }}</strong>
+            </div>
+            <div>
+              <small>E-mail</small>
+              <strong>{{ clienteSelecionado.email || 'Não informado' }}</strong>
+            </div>
+            <div>
+              <small>Telefone</small>
+              <strong>{{ clienteSelecionado.telefone || 'Não informado' }}</strong>
+            </div>
+          </div>
+
+          <h4 style="margin-top: 16px;">Endereço(s)</h4>
+          <div *ngIf="enderecosCliente.length > 0; else semEndereco">
+            <div class="item-endereco" *ngFor="let end of enderecosCliente">
+              📍 CEP: {{ end.cep }} - Nº {{ end.numero }} ({{ end.complemento || 'Sem complemento' }})
+            </div>
+          </div>
+          <ng-template #semEndereco>
+            <p class="texto-vazio">Nenhum endereço cadastrado.</p>
+          </ng-template>
+        </div>
+      </section>
+
+      <!-- 2. FUNCIONÁRIO RESPONSÁVEL -->
+      <section class="bloco-card">
+        <h3>2. Funcionário responsável</h3>
+
+        <div class="grupo-campo">
+          <label for="selectFuncionario">Atendente / Profissional</label>
+          <select
+            id="selectFuncionario"
+            [(ngModel)]="idFuncionario"
+            name="idFuncionario"
+          >
+            <option [value]="null" disabled>-- Selecione um funcionário --</option>
+            <option *ngFor="let func of funcionarios" [ngValue]="obterIdFuncionario(func)">
+              {{ obterNomeFuncionario(func) }}
+            </option>
+          </select>
+        </div>
+
+        <div class="grupo-campo" style="margin-top: 12px;">
+          <label for="dataAtendimento">Data do atendimento</label>
+          <input
+            type="date"
+            id="dataAtendimento"
+            [(ngModel)]="dataAtendimento"
+            name="dataAtendimento"
+          />
+        </div>
+      </section>
+
+    </div>
+
+    <!-- COLUNA DIREITA: RESUMO DO PEDIDO -->
+    <div class="coluna-resumo">
+      <section class="bloco-card resumo-pedido">
+        <h3>Resumo do pedido</h3>
+
+        <div class="lista-itens-checkout">
+          <div class="item-checkout" *ngFor="let reg of itensCarrinho">
+            <div>
+              <strong>{{ nomeItem(reg) }}</strong>
+              <small>{{ reg.quantidade }}x {{ formatarPreco(precoItem(reg)) }}</small>
+            </div>
+            <span class="subtotal-item">{{ formatarPreco(subtotalItem(reg)) }}</span>
+          </div>
+        </div>
+
+        <div class="divisor"></div>
+
+        <div class="linha-total">
+          <span>Valor Total</span>
+          <strong>{{ formatarPreco(totalPedido) }}</strong>
+        </div>
+
+        <button
+          type="button"
+          class="btn-confirmar"
+          (click)="confirmarPedido()"
+          [disabled]="enviando || !clienteSelecionado || !idFuncionario"
+        >
+          {{ enviando ? 'Registrando pedido...' : 'Confirmar Pedido' }}
+        </button>
+      </section>
+    </div>
+
+  </div>
+
+</div>
